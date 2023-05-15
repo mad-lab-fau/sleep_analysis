@@ -1,0 +1,8 @@
+{
+  "empkins_prestudy": "/Users/danielkrauss/code/Empkins/Data/empkins_bed_pre_study_dataset",
+  "processed_mesa_path": "/Users/danielkrauss/code/MA_Daniel_Krauss/data/sleep-wake-benchmarking-mesa-dataset",
+  "mesa_path": "/Users/danielkrauss/code/MA_Daniel_Krauss/data/mesa",
+  "mesa_path_edf": "/Users/danielkrauss/code/MA_Daniel_Krauss/data/mesa/polysomnography/edfs",
+  "nest_hub_pre_study": "/Users/danielkrauss/code/Empkins/Data/Nest_Hub",
+  "database_storage": "home/woody/iwso/iwso040h/sleep-analysis/exports/database/"
+}
