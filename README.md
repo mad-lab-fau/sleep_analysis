@@ -37,13 +37,15 @@ The evaluation of the sngle algorithms can be found in the following notebooks: 
 ## Using the Framework
 To run the algorithms on the MESA dataset, the following steps are required:
 
-1. Download the MESA dataset from [here](https://sleepdata.org/datasets/mesa) and place it in a custom folder (e.g. `data/mesa`).
-2. Adjust the path to the dataset in the [study_data.json](study_data.json) file.
-3. Run the [data_handling.py](experiments/data_handling/data_handling.py) script to preprocess the data and extract the features.
-4. Run the [algorithm_scripts](sleep_analysis/classification/algorithm_scripts) to run the algorithms.
+1. Install the repository by using poetry (instructions below in the [getting startet](#getting-started) section).
+2. Download the MESA dataset from [here](https://sleepdata.org/datasets/mesa) and place it in a custom folder (e.g. `data/mesa`).
+3. Create a folder for the processed data (e.g. `data/mesa_processed`).
+4. Adjust the MESA path and the processed path to the dataset in the [study_data.json](study_data.json) file.
+5. Run the [data_handling.py](experiments/data_handling/data_handling.py) script to preprocess the data and extract the features.
+6. Run the [algorithm_scripts](sleep_analysis/classification/algorithm_scripts) to run the algorithms.
     - The algorithms can be run with different modalities (actigraphy (ACT), heart rate variability (HRV), respiration rate variability (RRV), ECD-derived respiration rate variability (ED-RRV)).
     - The algorithms can also be run with custom combinations of modalities (e.g. ACT + HRV, ACT + RRV, ACT + HRV + RRV, ACT + HRV + RRV + ED-RRV, ...).
-5. The jupyter notebooks in the [evaluation](experiments/evaluation) folder can be used to evaluate the results.
+7. The jupyter notebooks in the [evaluation](experiments/evaluation) folder can be used to evaluate the results.
 
 
 
