@@ -12,9 +12,10 @@ Additionally, this work incorporates respiratory information through features de
 <br>
 
 The evaluation is performed for three different experiments: <br>
-Multistage classification **(Wake / N1 / N2 / N3 / REM)** & **(Wake / NREM / REM)** <br>
-and binary classification **(Wake / Sleep)**.
+- Multistage classification **(Wake / N1 / N2 / N3 / REM)** & **(Wake / NREM / REM)** <br>
+- Binary classification **(Wake / Sleep)**.
 <br>
+
 The evaluation is performed on the [MESA Sleep dataset](https://sleepdata.org/datasets/mesa) [paper1](https://pubmed.ncbi.nlm.nih.gov/29860441/), [paper2](https://pubmed.ncbi.nlm.nih.gov/25409106/), which includes sleep data of more than 1,000 participants.
 
 <img src="media/Dataset_visualization.jpg" alt="drawing" width="700"/>
@@ -31,6 +32,18 @@ The evaluation of the sngle algorithms can be found in the following notebooks: 
 
 ### Binary classification (Wake / Sleep)
 <img src="media/best_performing_Binary.jpg" alt="drawing" width="700"/>
+
+
+## Using the Framework
+To run the algorithms on the MESA dataset, the following steps are required:
+
+1. Download the MESA dataset from [here](https://sleepdata.org/datasets/mesa) and place it in a custom folder (e.g. `data/mesa`).
+2. Adjust the path to the dataset in the [study_data.json](study_data.json) file.
+3. Run the [data_handling.py](experiments/data_handling/data_handling.py) script to preprocess the data and extract the features.
+4. Run the [algorithm_scripts](sleep_analysis/classification/algorithm_scripts) to run the algorithms.
+    - The algorithms can be run with different modalities (actigraphy (ACT), heart rate variability (HRV), respiration rate variability (RRV), ECD-derived respiration rate variability (ED-RRV)).
+    - The algorithms can also be run with custom combinations of modalities (e.g. ACT + HRV, ACT + RRV, ACT + HRV + RRV, ACT + HRV + RRV + ED-RRV, ...).
+5. The jupyter notebooks in the [evaluation](experiments/evaluation) folder can be used to evaluate the results.
 
 
 
