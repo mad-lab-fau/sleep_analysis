@@ -21,7 +21,16 @@ The evaluation is performed on the [MESA Sleep dataset](https://sleepdata.org/da
 
 ## Results overview
 
-An overview of the full results can be in the following notebook: [results_notebook](experiments/evaluation/algorithm_modality_comparison/full_eval.ipynb)
+An overview of the full results can be in the following notebook: [results_notebook](experiments/evaluation/algorithm_modality_comparison/full_eval.ipynb). <br>
+The evaluation of the sngle algorithms can be found in the following notebooks: [LSTM](experiments/evaluation/evaluation_per_algorithm/LSTM.ipynb), [TCN](experiments/evaluation/evaluation_per_algorithm/TCN.ipynb), [AdaBoost](experiments/evaluation/evaluation_per_algorithm/AdaBoost.ipynb), [MLP](experiments/evaluation/evaluation_per_algorithm/MLP.ipynb), [SVM](experiments/evaluation/evaluation_per_algorithm/SVM.ipynb), [Random Forest](experiments/evaluation/evaluation_per_algorithm/Random_Forest.ipynb), [XGBoost](experiments/evaluation/evaluation_per_algorithm/XGBoost.ipynb). <br>
+### 5 stage classification (Wake / N1 / N2 / N3 / REM, according to AASM)
+<img src="media/best_performing_5stage.jpg" alt="drawing" width="700"/>
+
+### 3 stage classification (Wake / NREM / REM)
+<img src="media/best_performing_3stage.jpg" alt="drawing" width="700"/>
+
+### Binary classification (Wake / Sleep)
+<img src="media/best_performing_Binary.jpg" alt="drawing" width="700"/>
 
 
 
