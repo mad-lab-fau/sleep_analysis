@@ -1,6 +1,29 @@
 # Sleep-Analysis
 
-## ML and DL-based Sleep stage classification using actigraphy, heart rate variability, and respiratory rate variability
+## ML and DL-based Sleep stage classification using Actigraphy, Heart Rate Variability, and Respiratory Rate Variability
+
+Insufficient sleep quality is directly linked to a series of physical and physiological diseases. Therefore, reliable sleep monitoring
+is essential for prevention, diagnosis, and treatment of such.
+The gold standard approach for sleep monitoring and the detection of sleep disorders is **Polysomnography** (PSG), which is typically performed in a sleep laboratory.
+However, **PSG** is expensive, time-consuming, and uncomfortable for the patient. 
+To improve patient experience and prevent diseases at an early stage, **wearable sensors**, such as  **motion sensors**, **ECG** sensors or **respiration belts**, offer a promising alternative.
+This repository presents a benchmark analysis of the performance of machine learning and deep learning algorithms for sleep stage classification using multimodal approaches including **actigraphy**, **heart rate variability**, and **respiratory rate variability**.
+Additionally, this work incorporates respiratory information through features derived via  **ECG-derived respiration** (EDR) and compares their performance against the other approaches.
+<br>
+
+The evaluation is performed for three different experiments: <br>
+Multistage classification **(Wake / N1 / N2 / N3 / REM)** & **(Wake / NREM / REM)** <br>
+and binary classification **(Wake / Sleep)**.
+<br>
+The evaluation is performed on the [MESA Sleep dataset](https://sleepdata.org/datasets/mesa) [paper1](https://pubmed.ncbi.nlm.nih.gov/29860441/), [paper2](https://pubmed.ncbi.nlm.nih.gov/25409106/), which includes sleep data of more than 1,000 participants.
+
+<img src="media/Dataset_visualization.jpg" alt="drawing" width="700"/>
+
+## Results overview
+
+An overview of the full results can be in the following notebook: [results_notebook](experiments/evaluation/algorithm_modality_comparison/full_eval.ipynb)
+
+
 
 ## Project structure
 
@@ -61,7 +84,7 @@ Then run the commands below to get the latest source and install the dependencie
 
 ```bash
 git clone https://github.com/danielkrauss2/sleep_analysis.git
-git clone https://mad-srv.informatik.uni-erlangen.de/MadLab/health-psychology/mesa-data-importer.git
+git clone https://github.com/mad-lab-fau/mesa-data-importer.git
 git clone https://github.com/mad-lab-fau/BioPsyKit.git
 git clone https://github.com/empkins/empkins-io.git
 ```
