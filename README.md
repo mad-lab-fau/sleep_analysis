@@ -109,7 +109,6 @@ Then run the commands below to get the latest source and install the dependencie
 ```bash
 git clone https://github.com/danielkrauss2/sleep_analysis.git
 git clone https://github.com/mad-lab-fau/mesa-data-importer.git
-git clone https://github.com/mad-lab-fau/BioPsyKit.git
 git clone https://github.com/empkins/empkins-io.git
 ```
 

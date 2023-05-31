@@ -20,8 +20,7 @@ torch = "1.12.1"
 greenlet = "2.0.1"
 mesa_data_importer = {path="../mesa-data-importer", develop = true}
 hrv-analysis = "^1.0.4"
-biopsykit = {path="../../BioPsyKit", develop = true}
-ba-philipp-doerfler = {path="../ba-philipp-doerfler", develop = true}
+biopsykit = "^0.9.0"
 yasa = "^0.6.3"
 shap = "^0.41.0"
 

@@ -7,9 +7,8 @@ import mesa_data_importer as mesa
 import numpy as np
 import pandas as pd
 import tqdm
-from ba_philipp_doerfler.respiration_extraction.algorithms.ecg.extraction.extraction_feature import (
+from sleep_analysis.preprocessing.mesa_dataset.edr.extraction_feature import (
     ExtractionCharlton,
-    ExtractionKarlen,
 )
 from biopsykit.signals.ecg import EcgProcessor
 
