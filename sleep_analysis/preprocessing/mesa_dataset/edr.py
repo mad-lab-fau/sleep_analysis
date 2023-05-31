@@ -7,13 +7,11 @@ import mesa_data_importer as mesa
 import numpy as np
 import pandas as pd
 import tqdm
-from sleep_analysis.preprocessing.mesa_dataset.edr.extraction_feature import (
-    ExtractionCharlton,
-)
 from biopsykit.signals.ecg import EcgProcessor
 
 from sleep_analysis.feature_extraction.rrv import extract_rrv_features_helper, process_resp
 from sleep_analysis.feature_extraction.utils import check_processed
+from sleep_analysis.preprocessing.mesa_dataset.edr.extraction_feature import ExtractionCharlton
 from sleep_analysis.preprocessing.utils import extract_edf_channel
 
 with open(Path(__file__).parents[3].joinpath("study_data.json")) as f:

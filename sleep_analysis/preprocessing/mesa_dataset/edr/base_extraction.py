@@ -1,8 +1,8 @@
 from abc import abstractmethod
+from typing import List, Optional, Sequence, Union
 
 import pandas as pd
 from tpcp import Algorithm, Parameter, make_action_safe
-from typing import Optional, Union, List, Sequence
 
 
 class BaseExtraction(Algorithm):
@@ -29,12 +29,10 @@ class BaseExtraction(Algorithm):
 
     def normalize(self, respiration_signal: pd.DataFrame):
 
-        normalized_respiration_signal = (
-            respiration_signal - respiration_signal.mean()
-        ) / respiration_signal.std()
+        normalized_respiration_signal = (respiration_signal - respiration_signal.mean()) / respiration_signal.std()
 
-        scaled_respiration_signal = (
-            normalized_respiration_signal - normalized_respiration_signal.min()
-        ) / (normalized_respiration_signal.max() - normalized_respiration_signal.min())
+        scaled_respiration_signal = (normalized_respiration_signal - normalized_respiration_signal.min()) / (
+            normalized_respiration_signal.max() - normalized_respiration_signal.min()
+        )
 
         return scaled_respiration_signal

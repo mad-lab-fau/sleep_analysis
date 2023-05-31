@@ -1,6 +1,7 @@
-from sleep_analysis.preprocessing.mesa_dataset.edr.base_extraction import BaseExtraction
 import pandas as pd
 from biopsykit.signals.ecg import EcgProcessor
+
+from sleep_analysis.preprocessing.mesa_dataset.edr.base_extraction import BaseExtraction
 
 """
  Feature based EDR algorithms XB1 to XB3 from https://doi.org/10.1088/1361-6579/aa670e
@@ -22,9 +23,7 @@ class ExtractionCharlton(BaseExtraction):
         processor.ecg_process(outlier_correction=None)
         # Generate respiration respiratory_signal
         self.respiratory_signal = EcgProcessor.ecg_estimate_rsp(
-            ecg_processor=processor,
-            key="Data",
-            edr_type="peak_trough_mean",
+            ecg_processor=processor, key="Data", edr_type="peak_trough_mean",
         )
         # Normalize respiration respiratory_signal
         self.respiratory_signal = self.normalize(self.respiratory_signal)
@@ -41,9 +40,7 @@ class ExtractionKarlen(BaseExtraction):
         processor.ecg_process(outlier_correction=None)
 
         self.respiratory_signal = EcgProcessor.ecg_estimate_rsp(
-            ecg_processor=processor,
-            key="Data",
-            edr_type="peak_trough_diff",
+            ecg_processor=processor, key="Data", edr_type="peak_trough_diff",
         )
 
         self.respiratory_signal = self.normalize(self.respiratory_signal)
@@ -60,9 +57,7 @@ class ExtractionOrphandiou(BaseExtraction):
         processor.ecg_process(outlier_correction=None)
         # Generate respiration respiratory_signal
         self.respiratory_signal = EcgProcessor.ecg_estimate_rsp(
-            ecg_processor=processor,
-            key="Data",
-            edr_type="peak_peak_interval",
+            ecg_processor=processor, key="Data", edr_type="peak_peak_interval",
         )
         # Normalize respiration respiratory_signal
         self.respiratory_signal = self.normalize(self.respiratory_signal)
