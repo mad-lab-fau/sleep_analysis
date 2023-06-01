@@ -1,6 +1,7 @@
 # Sleep-Analysis
 
 ## ML and DL-based Sleep stage classification using Actigraphy, Heart Rate Variability, and Respiratory Rate Variability
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 Insufficient sleep quality is directly linked to a series of physical and physiological diseases. Therefore, reliable sleep monitoring
 is essential for prevention, diagnosis, and treatment of such.

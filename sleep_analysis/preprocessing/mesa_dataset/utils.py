@@ -1,3 +1,4 @@
+"""Helper functions for preprocessing of the MESA Sleep dataset."""
 import json
 import re
 from pathlib import Path
@@ -13,11 +14,12 @@ with open(Path(__file__).parents[3].joinpath("study_data.json")) as f:
 
 def check_mesa_data_availability(mesa_path, processed_mesa_path):
     """
-    Check data completeness - This function iterates through all actigraphy, HR and .edf files as well as the "overlap file" which indicates the overlap of the single signals
+    Check data completeness - This function iterates through all actigraphy, HR and .edf files
+    as well as the "overlap file", which indicates the overlap of the single signals.
+
     :param mesa_path: path to mesa dataset - saved in json file in root folder
     :param processed_mesa_path: path to processed mesa file - saved in json file in root folder
     """
-
     overlap = pd.read_csv(mesa_path.joinpath("overlap/mesa-actigraphy-psg-overlap.csv"))
 
     actigraphy_path = mesa_path.joinpath("actigraphy")
@@ -63,7 +65,7 @@ def match_exclusion_criteria(info, subj):
         return True
 
     # check if epochs are not scored realistic
-    if subj_info["slewake5"].iloc[0] == True:
+    if subj_info["slewake5"].iloc[0]:
         print("Subj - " + subj + " - PSG scoring quality insufficient")
         return True
 
@@ -76,7 +78,7 @@ def match_exclusion_criteria(info, subj):
 
 
 def align_datastreams(df_actigraphy, df_psg, df_hr, df_resp_features, df_edr_features):
-
+    """ Align datastreams to the same epochs."""
     epoch_hr_set = set(df_hr["epoch"].values)
     epoch_actigraphy_set = set(df_actigraphy["line"])
     epoch_set_resp = set(df_resp_features["epoch"])
@@ -104,7 +106,7 @@ def align_datastreams(df_actigraphy, df_psg, df_hr, df_resp_features, df_edr_fea
 
 
 def clean_data_to_csv(datastreams_combined, df_hr, df_resp_features, df_edr_features, mesa_id):
-    # save datastreams to csv
+    """Save datastreams to csv."""
     datastreams_combined.to_csv(
         processed_mesa_path.joinpath("actigraph_data_clean/actigraph_data_clean" + "{:04d}".format(mesa_id) + ".csv"),
         index=False,
@@ -127,8 +129,8 @@ def clean_data_to_csv(datastreams_combined, df_hr, df_resp_features, df_edr_feat
 
 def check_dataset_validity(dataset):
     """
-    Check if the number of epochs for feature set and ground truth is the same
-    Error is printed if this is not the case
+    Check if the number of epochs for feature set and ground truth is the same.
+    Error is printed if this is not the case.
     """
     with tqdm.tqdm(total=len(dataset)) as progress_bar:
         i = 0
