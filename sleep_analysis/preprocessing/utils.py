@@ -2,6 +2,7 @@
 import mesa_data_importer as mesa
 import pandas as pd
 
+
 def extract_edf_channel(path, subj_id, channel, tmin=None, tmax=None):
     """Extract data from one channel of an EDF file."""
     if tmin and tmax:

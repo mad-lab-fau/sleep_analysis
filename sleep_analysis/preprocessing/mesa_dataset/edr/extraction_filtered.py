@@ -1,3 +1,4 @@
+"""Functions and Classes for EDR extraction applying filters on ECG data."""
 import neurokit2 as nk
 import numpy as np
 import pandas as pd
@@ -8,9 +9,9 @@ from sleep_analysis.preprocessing.mesa_dataset.edr.base_extraction import BaseEx
 
 
 class ExtractionWavelet(BaseExtraction):
-    """
-    Abstract Class for Wavelet based algorithms
-    implements get_wavelet_coefficients(...) to unify the wavelet transform
+    """Abstract Class for Wavelet based algorithms.
+
+    implements get_wavelet_coefficients(...) to unify the wavelet transform.
     """
 
     def extract(self, ecg_signal: pd.DataFrame, sampling_rate: float):
@@ -34,7 +35,8 @@ class ExtractionWavelet(BaseExtraction):
 
 
 class ExtractionLindeberg(BaseExtraction):
-    """
+    """Abstract Class for Lindeberg based algorithms.
+
     Band-pass filter between plausible respiratory frequencies
     from Charlton et al. http://dx.doi.org/10.1088/0967-3334/37/4/610
     based on the paper from Lindeberg et al.
@@ -50,8 +52,8 @@ class ExtractionLindeberg(BaseExtraction):
 
 
 class ExtractionAddisonAM(ExtractionWavelet):
+    """Addison  algorithm for EDR extraction (Amplitude Modulation).
 
-    """
     The maximum amplitude of the Continuous Wavelet Transform (CWT)
     within plausible cardiac frequencies (30–220 beats per minute)
     based on Ridges described in https://doi.org/10.1142/S0219691304000329
@@ -88,8 +90,8 @@ class ExtractionAddisonAM(ExtractionWavelet):
 
 
 class ExtractionAddisonFM(ExtractionWavelet):
+    """Addison  algorithm for EDR extraction (Frequency Modulation).
 
-    """
     The frequency indices of the maximum amplitudes over time of the Continuous Wavelet Transform (CWT)
     within plausible cardiac frequencies (30–220 beats per minute)
     based on ridges in https://doi.org/10.1142/S0219691304000329
@@ -131,7 +133,8 @@ class ExtractionAddisonFM(ExtractionWavelet):
 
 
 class ExtractionGarde(BaseExtraction):
-    """
+    """Garde algorithm for EDR extraction.
+
     Filter using the centred-correntropy function (CCF) from Garde et al.
     https://doi.org/10.1371/journal.pone.0086427
     WARNING: Doesnt seem to work yet on 250Hz ECG Signals.
@@ -193,8 +196,8 @@ class ExtractionGarde(BaseExtraction):
 
 
 class ExtractionResampledAddisonFM(ExtractionWavelet):
+    """Resampled Addison algorithm for EDR extraction (Frequency Modulation).
 
-    """
     The maximum amplitude of the Continuous Wavelet Transform (CWT)
     within plausible cardiac frequencies (30–220 beats per minute)
     with resamplimng to 25 Hz This was only for experimenting with sampling rate as CWT is

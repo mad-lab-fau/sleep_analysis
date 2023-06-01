@@ -3,6 +3,8 @@
 ## ML and DL-based Sleep stage classification using Actigraphy, Heart Rate Variability, and Respiratory Rate Variability
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 ![GitHub](https://img.shields.io/github/license/mad-lab-fau/sleep_analysis)
+![GitHub last commit](https://img.shields.io/github/last-commit/mad-lab-fau/sleep_analysis)
+
 
 Insufficient sleep quality is directly linked to a series of physical and physiological diseases. Therefore, reliable sleep monitoring
 is essential for prevention, diagnosis, and treatment of such.
@@ -21,6 +23,17 @@ The evaluation is performed for three different experiments: <br>
 The evaluation is performed on the [MESA Sleep dataset](https://sleepdata.org/datasets/mesa) [paper1](https://pubmed.ncbi.nlm.nih.gov/29860441/), [paper2](https://pubmed.ncbi.nlm.nih.gov/25409106/), which includes sleep data of more than 1,000 participants.
 
 <img src="media/Dataset_visualization.jpg" alt="drawing" width="700"/>
+
+## ECG derived respiration (EDR)
+This Repository also includes Algorithms for the extraction of EDR signals from ECG signals. <br>
+- Lindberg Algorithm [paper](https://link.springer.com/article/10.1007/BF02457833)
+- Karlen Algorithm [paper](https://ieeexplore.ieee.org/document/6458992)
+- Charlton Algorithm [paper](https://iopscience.iop.org/article/10.1088/0967-3334/37/4/610)
+- AddisonAM Algorithm [paper](https://www.worldscientific.com/doi/abs/10.1142/S0219691304000329)
+- AddisonFM Algorithm [paper](https://www.worldscientific.com/doi/abs/10.1142/S0219691304000329)
+- Vangent Algorithm [paper](https://linkinghub.elsevier.com/retrieve/pii/S1369847818306740)
+- Soni Algorithm [paper](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6329220/)
+- Sakar Algorithm [paper](https://digital-library.theiet.org/content/conferences/10.1049/cp.2015.1654)
 
 ## Results overview
 

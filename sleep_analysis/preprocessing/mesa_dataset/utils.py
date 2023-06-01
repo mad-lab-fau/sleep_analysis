@@ -12,21 +12,22 @@ with open(Path(__file__).parents[3].joinpath("study_data.json")) as f:
     processed_mesa_path = Path(path_dict["processed_mesa_path"])
 
 
-def check_mesa_data_availability(mesa_path, processed_mesa_path):
-    """
-    Check data completeness - This function iterates through all actigraphy, HR and .edf files
+def check_mesa_data_availability(file_path, processed_file_path):
+    """Check data completeness.
+
+    This function iterates through all actigraphy, HR and .edf files
     as well as the "overlap file", which indicates the overlap of the single signals.
 
-    :param mesa_path: path to mesa dataset - saved in json file in root folder
-    :param processed_mesa_path: path to processed mesa file - saved in json file in root folder
+    :param file_path: path to mesa dataset - saved in json file in root folder
+    :param processed_file_path: path to processed mesa file - saved in json file in root folder
     """
-    overlap = pd.read_csv(mesa_path.joinpath("overlap/mesa-actigraphy-psg-overlap.csv"))
+    overlap = pd.read_csv(file_path.joinpath("overlap/mesa-actigraphy-psg-overlap.csv"))
 
-    actigraphy_path = mesa_path.joinpath("actigraphy")
-    psg_path = mesa_path.joinpath("polysomnography/annotations-events-nsrr")
-    r_point_path = mesa_path.joinpath("polysomnography/annotations-rpoints")
-    path_resp = Path(processed_mesa_path.joinpath("respiration_features_raw"))
-    edr_path = Path(processed_mesa_path.joinpath("edr_respiration_features_raw"))
+    actigraphy_path = file_path.joinpath("actigraphy")
+    psg_path = file_path.joinpath("polysomnography/annotations-events-nsrr")
+    r_point_path = file_path.joinpath("polysomnography/annotations-rpoints")
+    path_resp = Path(processed_file_path.joinpath("respiration_features_raw"))
+    edr_path = Path(processed_file_path.joinpath("edr_respiration_features_raw"))
 
     path_list_actigraphy = list(Path(actigraphy_path).glob("*.csv"))
     path_list_psg = list(Path(psg_path).glob("*.xml"))
@@ -34,11 +35,11 @@ def check_mesa_data_availability(mesa_path, processed_mesa_path):
     path_list_resp = list(Path(path_resp).glob("*.csv"))
     path_list_edr = list(Path(edr_path).glob("*.csv"))
 
-    mesa_id_actigraphy = set(re.findall("(\d{4})", str(path_list_actigraphy)))
-    mesa_id_psg = set(re.findall("(\d{4})", str(path_list_psg)))
-    mesa_id_r_point = set(re.findall("(\d{4})", str(path_list_r_point_path)))
-    mesa_id_resp = set(re.findall("(\d{4})", str(path_list_resp)))
-    mesa_id_edr = set(re.findall("(\d{4})", str(path_list_edr)))
+    mesa_id_actigraphy = set(re.findall("(\\d{4})", str(path_list_actigraphy)))
+    mesa_id_psg = set(re.findall("(\\d{4})", str(path_list_psg)))
+    mesa_id_r_point = set(re.findall("(\\d{4})", str(path_list_r_point_path)))
+    mesa_id_resp = set(re.findall("(\\d{4})", str(path_list_resp)))
+    mesa_id_edr = set(re.findall("(\\d{4})", str(path_list_edr)))
     mesa_id_overlap = set(overlap["mesaid"].apply(str).apply(lambda x: x.zfill(4)).tolist())
 
     # set.intersection(set1, set2 ... etc) # Method to find intersection between two or more sets
@@ -46,8 +47,8 @@ def check_mesa_data_availability(mesa_path, processed_mesa_path):
 
 
 def match_exclusion_criteria(info, subj):
-    """
-    Exclude every subejct with bad quality gradings.
+    """Exclude every subejct with bad quality gradings.
+
     Scale:
     2 - Poor
     3 - Fair
@@ -78,7 +79,7 @@ def match_exclusion_criteria(info, subj):
 
 
 def align_datastreams(df_actigraphy, df_psg, df_hr, df_resp_features, df_edr_features):
-    """ Align datastreams to the same epochs."""
+    """Align datastreams to the same epochs."""
     epoch_hr_set = set(df_hr["epoch"].values)
     epoch_actigraphy_set = set(df_actigraphy["line"])
     epoch_set_resp = set(df_resp_features["epoch"])
@@ -107,20 +108,23 @@ def align_datastreams(df_actigraphy, df_psg, df_hr, df_resp_features, df_edr_fea
 
 def clean_data_to_csv(datastreams_combined, df_hr, df_resp_features, df_edr_features, mesa_id):
     """Save datastreams to csv."""
+    # pylint: disable=consider-using-f-string
     datastreams_combined.to_csv(
         processed_mesa_path.joinpath("actigraph_data_clean/actigraph_data_clean" + "{:04d}".format(mesa_id) + ".csv"),
         index=False,
     )
+    # pylint: disable=consider-using-f-string
     df_hr.to_csv(
         processed_mesa_path.joinpath("ecg_data_clean/ecg_data_clean" + "{:04d}".format(mesa_id) + ".csv"), index=False
     )
+    # pylint: disable=consider-using-f-string
     df_resp_features.to_csv(
         processed_mesa_path.joinpath(
             "respiration_features_clean/respiration_features" + "{:04d}".format(mesa_id) + ".csv"
         ),
         index=False,
     )
-
+    # pylint: disable=consider-using-f-string
     df_edr_features.to_csv(
         processed_mesa_path.joinpath("edr_features_clean/edr_features" + "{:04d}".format(mesa_id) + ".csv"),
         index=False,
@@ -128,7 +132,8 @@ def clean_data_to_csv(datastreams_combined, df_hr, df_resp_features, df_edr_feat
 
 
 def check_dataset_validity(dataset):
-    """
+    """Check dataset validity.
+
     Check if the number of epochs for feature set and ground truth is the same.
     Error is printed if this is not the case.
     """
