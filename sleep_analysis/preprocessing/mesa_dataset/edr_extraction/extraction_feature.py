@@ -1,7 +1,7 @@
 import pandas as pd
 from biopsykit.signals.ecg import EcgProcessor
 
-from sleep_analysis.preprocessing.mesa_dataset.edr.base_extraction import BaseExtraction
+from sleep_analysis.preprocessing.mesa_dataset.edr_extraction.base_extraction import BaseExtraction
 
 """
  Feature based EDR algorithms XB1 to XB3 from https://doi.org/10.1088/1361-6579/aa670e

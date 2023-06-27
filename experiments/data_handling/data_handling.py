@@ -7,7 +7,9 @@ from sleep_analysis.preprocessing.mesa_dataset.edr import extract_edr_features
 from sleep_analysis.preprocessing.mesa_dataset.preprocess_mesa import preprocess_mesa
 from sleep_analysis.preprocessing.mesa_dataset.utils import check_dataset_validity
 
+print("Extracting RRV features from MESA dataset...")
 extract_rrv_features(overwrite=True)
+print("Extracting EDR features from MESA dataset...")
 extract_edr_features(overwrite=True)
 
 preprocess_mesa()

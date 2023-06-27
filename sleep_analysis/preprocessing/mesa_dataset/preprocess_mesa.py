@@ -31,7 +31,7 @@ def preprocess_mesa():
     """
     overlap = pd.read_csv(mesa_path.joinpath("overlap/mesa-actigraphy-psg-overlap.csv"))
 
-    dataset_info = pd.read_csv(mesa_path.joinpath("datasets/mesa-sleep-dataset-0.5.0.csv")).set_index("mesaid")
+    dataset_info = pd.read_csv(mesa_path.joinpath("datasets/mesa-sleep-dataset-0.6.0.csv")).set_index("mesaid")
 
     mesa_id_set = check_mesa_data_availability(mesa_path, processed_mesa_path)
 

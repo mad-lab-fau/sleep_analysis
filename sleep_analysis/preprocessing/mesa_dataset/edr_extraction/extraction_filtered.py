@@ -5,7 +5,7 @@ import pandas as pd
 import scipy.stats
 from scipy import signal
 
-from sleep_analysis.preprocessing.mesa_dataset.edr.base_extraction import BaseExtraction
+from sleep_analysis.preprocessing.mesa_dataset.edr_extraction.base_extraction import BaseExtraction
 
 
 class ExtractionWavelet(BaseExtraction):
@@ -19,6 +19,7 @@ class ExtractionWavelet(BaseExtraction):
 
     @staticmethod
     def get_wavelet_coefficients(ecg_signal: pd.DataFrame, sampling_rate: float):
+        """Calculate the wavelet coefficients for the given ecg signal."""
         # Determine frequencies of interest
         lowest_frequency = 0.2
         highest_frequency = 3.8
@@ -66,8 +67,8 @@ class ExtractionAddisonAM(ExtractionWavelet):
         )
 
         # filter frequencies between 30 and 220 bpm
-        range = (30, 220)
-        rel_rows = [bool(freq >= range[0] / 60 and freq <= range[1] / 60) for freq in freqs]
+        filter_range = (30, 220)
+        rel_rows = [bool(filter_range[0] / 60 <= freq <= filter_range[1] / 60) for freq in freqs]
         filtered_coefficients = coefficients[rel_rows]
 
         # Get rid of 3rd dimension
@@ -78,8 +79,6 @@ class ExtractionAddisonAM(ExtractionWavelet):
 
         # Find maxima magnitudes and their indices
         max_magnitudes = [np.amax(np.abs(time_row)) for time_row in filtered_coefficients]
-
-        max_indices = [np.argmax(np.abs(time_row)) for time_row in filtered_coefficients]
 
         # Saving with time index
         self.respiratory_signal = pd.DataFrame(data=max_magnitudes, index=ecg_signal.index)
@@ -104,8 +103,8 @@ class ExtractionAddisonFM(ExtractionWavelet):
         )
 
         # filter frequencies between 30 and 220 bpm
-        range = (30, 220)
-        rel_rows = [bool(freq >= range[0] / 60 and freq <= range[1] / 60) for freq in freqs]
+        filter_range = (30, 220)
+        rel_rows = [bool(filter_range[0] / 60 <= freq <= filter_range[1] / 60) for freq in freqs]
 
         # Filter coefficients and frequencies
         filtered_coefficients = coefficients[rel_rows]
@@ -118,7 +117,6 @@ class ExtractionAddisonFM(ExtractionWavelet):
         filtered_coefficients = filtered_coefficients.transpose()
 
         # Find maxima magnitudes and their indices
-        max_magnitudes = [np.amax(np.abs(time_row)) for time_row in filtered_coefficients]
         max_indices = [np.argmax(np.abs(time_row)) for time_row in filtered_coefficients]
 
         # take the maximum frequencies using the found indices (#Could maybe be optimised in one step)
@@ -139,7 +137,6 @@ class ExtractionGarde(BaseExtraction):
     https://doi.org/10.1371/journal.pone.0086427
     WARNING: Doesnt seem to work yet on 250Hz ECG Signals.
     Maybe too much noise but more likely #an implementation error in __ccf()
-    For that reason it was not used in the Thesis.
     """
 
     def extract(self, ecg_signal: pd.DataFrame, sampling_rate: float):
@@ -218,8 +215,8 @@ class ExtractionResampledAddisonFM(ExtractionWavelet):
         )
 
         # filter frequencies between 30 and 220 bpm
-        range = (30, 220)
-        rel_rows = [bool(freq >= range[0] / 60 and freq <= range[1] / 60) for freq in frequencies]
+        filter_range = (30, 220)
+        rel_rows = [bool(freq >= filter_range[0] / 60 and freq <= filter_range[1] / 60) for freq in frequencies]
         # Filter to only relevant rows
         filtered_coefficients = coefficients[rel_rows]
         filtered_coefficients = np.reshape(filtered_coefficients, filtered_coefficients.shape[:2])

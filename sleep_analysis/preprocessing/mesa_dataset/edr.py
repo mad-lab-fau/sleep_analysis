@@ -1,17 +1,16 @@
 import json
-import random
 import re
 from pathlib import Path
 
-import mesa_data_importer as mesa
 import numpy as np
 import pandas as pd
 import tqdm
 from biopsykit.signals.ecg import EcgProcessor
+import warnings
 
 from sleep_analysis.feature_extraction.rrv import extract_rrv_features_helper, process_resp
 from sleep_analysis.feature_extraction.utils import check_processed
-from sleep_analysis.preprocessing.mesa_dataset.edr.extraction_feature import ExtractionCharlton
+from sleep_analysis.preprocessing.mesa_dataset.edr_extraction.extraction_feature import ExtractionCharlton
 from sleep_analysis.preprocessing.utils import extract_edf_channel
 
 with open(Path(__file__).parents[3].joinpath("study_data.json")) as f:
@@ -26,6 +25,8 @@ def extract_edr_features(overwrite=False):
     overwrite: if True, overwrite existing files
 
     """
+    warnings.filterwarnings("ignore", category=RuntimeWarning)
+
     path_list = list(Path(edf_path).glob("*.edf"))
     mesa_id = re.findall("(\d{4})", str(path_list))
 

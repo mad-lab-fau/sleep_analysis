@@ -1,6 +1,7 @@
 import json
 import os
 import re
+import warnings
 from pathlib import Path
 
 import numpy as np
@@ -51,6 +52,8 @@ def calc_actigraph_features(series_actigraph: pd.Series, windows_size: int = 20)
     :param windows_size: maximum size of rolling windows. All window-sizes from 1 to window_size will be computed: default = 20
     :returns: pd.DataFrame containing the extracted features
     """
+    warnings.simplefilter(action='ignore', category=pd.errors.PerformanceWarning)
+
     df_features = pd.DataFrame()
     for win_size in np.arange(1, windows_size):
         df_features["_acc_mean_%d" % win_size] = (

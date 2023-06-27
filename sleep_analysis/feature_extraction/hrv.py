@@ -1,5 +1,6 @@
 import json
 import re
+import warnings
 from pathlib import Path
 
 import numpy as np
@@ -57,6 +58,8 @@ def calc_hrv_features(df_hr: pd.DataFrame):
     :param df_hr: pd.DataFrame that contains RR-intervals
     :returns: pd.DataFrame that contains all HRV features
     """
+    warnings.filterwarnings("ignore", category=UserWarning)
+
     hr_epoch_set = set(df_hr["epoch"].values)
 
     all_hr_features = {}
