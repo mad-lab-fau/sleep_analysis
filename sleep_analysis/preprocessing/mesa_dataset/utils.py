@@ -142,7 +142,7 @@ def check_dataset_validity(dataset):
         for subj in dataset:
             try:
                 assert subj.ground_truth.dropna().shape[0] == subj.features.dropna().shape[0]
-                assert subj.features.shape[1] == 460
+                assert subj.features.shape[1] == 520
             except AssertionError:
                 print("Shape of feature/ground-truth of subject " + subj.index["mesa_id"][0] + " invalid!")
                 print(str(subj.index["mesa_id"][0] + " - columns: ") + str(subj.features.shape[1]))
