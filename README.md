@@ -122,7 +122,7 @@ Install Python >=3.8 and [poetry](https://python-poetry.org).
 Then run the commands below to get the latest source and install the dependencies:
 
 ```bash
-git clone https://github.com/danielkrauss2/sleep_analysis.git
+git clone https://github.com/mad-lab-fau/sleep_analysis.git
 git clone https://github.com/mad-lab-fau/mesa-data-importer.git
 git clone https://github.com/empkins/empkins-io.git
 ```
