@@ -7,7 +7,7 @@
 
 This repository contains a framework for the classification of sleep stages using different algorithms and modalities. <br>
 
-Version for paper: Incorporating Respiratory Signals for ML-based Multi-Modal Sleep Stage Classification: A Large-Scale Benchmark Study with Actigraphy and HRV (https://doi.org/10.1093/sleep/zsaf091) on Tag: v0.1.0
+Version for paper: Incorporating Respiratory Signals for ML-based Multi-Modal Sleep Stage Classification: A Large-Scale Benchmark Study with Actigraphy and HRV (https://doi.org/10.1093/sleep/zsaf091) on Tag: v0.1.0 (https://github.com/mad-lab-fau/sleep_analysis/releases/tag/v0.1.0)
 
 The evaluation can be performed for three different classification schemes: <br>
 - Multistage classification **(Wake / N1 / N2 / N3 / REM)** & **(Wake / NREM / REM)** <br>
