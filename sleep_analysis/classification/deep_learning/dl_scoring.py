@@ -6,12 +6,14 @@ import pandas as pd
 import sklearn.metrics as sk_metrics
 from biopsykit.sleep.sleep_endpoints import compute_sleep_endpoints
 from sklearn.metrics import confusion_matrix, matthews_corrcoef
-from tpcp.validate import NoAgg
+from tpcp.validate import no_agg
 
 from sleep_analysis.classification.utils.scoring import compute_bed_interval_from_datapoint
 from sleep_analysis.datasets.mesadataset import MesaDataset
+from sleep_analysis.datasets.d04_main_dataset_control import D04MainStudy
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)
+warnings.filterwarnings("ignore", category=UserWarning)
 
 
 def dl_score(prediction, ground_truth, classification_type="binary", subject_id=None):
@@ -22,9 +24,9 @@ def dl_score(prediction, ground_truth, classification_type="binary", subject_id=
 
 
 def dl_score_binary(prediction, ground_truth, subject_id=None):
-
     prediction = _sanitize_sleep_wake_df(prediction)
 
+    print("calculation of confusion matrix", "binary classification", flush=True)
     conf_matrix = confusion_matrix(ground_truth, prediction)
 
     scoring = {
@@ -35,27 +37,29 @@ def dl_score_binary(prediction, ground_truth, subject_id=None):
         "kappa": calculate_cohens_kappa(ground_truth, prediction),
         "specificity": calculate_specificity(ground_truth, prediction),
         "mcc": matthews_corrcoef(ground_truth, prediction),
-        "confusion_matrix": NoAgg(conf_matrix),
+        "confusion_matrix": no_agg(conf_matrix),
     }
 
-    if subject_id is not None:
-        dataset = MesaDataset()
-        datapoint = dataset.get_subset(mesa_id=[subject_id])
-        bed_interval = compute_bed_interval_from_datapoint(datapoint)
+    # if subject_id is not None:
+    #    dataset = MesaDataset()
+    #    datapoint = dataset.get_subset(mesa_id=[subject_id])
+    #    bed_interval = compute_bed_interval_from_datapoint(datapoint)
 
-        sleep_endpoints = compute_sleep_endpoints(pd.DataFrame(prediction, columns=["sleep_wake"]), bed_interval)
+    #    sleep_endpoints = compute_sleep_endpoints(pd.DataFrame(prediction, columns=["sleep_wake"]), bed_interval)
 
-        if not sleep_endpoints:
-            sleep_endpoints = _empty_sleep_metrics()
+    #    if not sleep_endpoints:
+    #        sleep_endpoints = _empty_sleep_metrics()
 
-        scoring.update(sleep_endpoints)
-        list(map(scoring.pop, ["date", "wake_bouts", "sleep_bouts", "number_wake_bouts"]))
+    #    scoring.update(sleep_endpoints)
+    #    list(map(scoring.pop, ["date", "wake_bouts", "sleep_bouts", "number_wake_bouts"]))
 
     return scoring
 
 
 def dl_score_multiclass(prediction, ground_truth, classification_type, subject_id=None):
     ground_truth = ground_truth[["sleep_stage"]]
+    # convert ground truth to integer
+    ground_truth = ground_truth.astype(int)
 
     # set labels depending on classification type. This is necessary to compute the confusion matrix.
     labels = []
@@ -68,40 +72,45 @@ def dl_score_multiclass(prediction, ground_truth, classification_type, subject_i
     elif classification_type == "3stage":
         # labels = "wake", "NREM", "REM"
         labels = [0, 1, 2]
+    else:
+        raise ValueError(f"Invalid classification type: {classification_type}")
 
+    # print("calculation of confusion matrix ... ", "multi-class classification ... labels: ", labels, flush=True)
     # here: access to classification + ground truth --> scoring possible
-    conf_matrix = confusion_matrix(ground_truth, prediction, labels=labels)
-
+    conf_matrix = confusion_matrix(y_true=np.array(ground_truth["sleep_stage"]), y_pred=prediction, labels=labels)
+    # print(conf_matrix)
     scoring = {
         "accuracy": sk_metrics.accuracy_score(ground_truth, prediction),
         "precision": sk_metrics.precision_score(ground_truth, prediction, zero_division=0, average="weighted"),
         "recall": sk_metrics.recall_score(ground_truth, prediction, zero_division=0, average="weighted"),
         "f1": sk_metrics.f1_score(ground_truth, prediction, zero_division=0, average="weighted"),
-        "kappa": sk_metrics.cohen_kappa_score(ground_truth, prediction,),
+        "kappa": sk_metrics.cohen_kappa_score(
+            ground_truth,
+            prediction,
+        ),
         "specificity": dl_multiclass_specificity(ground_truth, prediction, labels=labels, average="weighted"),
         "mcc": matthews_corrcoef(ground_truth, prediction),
-        "confusion_matrix": NoAgg(conf_matrix),
+        "confusion_matrix": no_agg(conf_matrix),
     }
 
-    if subject_id is not None:
-        dataset = MesaDataset()
-        datapoint = dataset.get_subset(mesa_id=[subject_id])
-        bed_interval = compute_bed_interval_from_datapoint(datapoint)
-        prediction[prediction != 0] = 1
+    # if subject_id is not None:
+    #    dataset = MesaDataset()
+    #    datapoint = dataset.get_subset(mesa_id=[subject_id])
+    #    bed_interval = compute_bed_interval_from_datapoint(datapoint)
+    #    prediction[prediction != 0] = 1
 
-        sleep_endpoints = compute_sleep_endpoints(pd.DataFrame(prediction, columns=["sleep_wake"]), bed_interval)
+    #    sleep_endpoints = compute_sleep_endpoints(pd.DataFrame(prediction, columns=["sleep_wake"]), bed_interval)
 
-        if not sleep_endpoints:
-            sleep_endpoints = _empty_sleep_metrics()
+    #    if not sleep_endpoints:
+    #        sleep_endpoints = _empty_sleep_metrics()
 
-        scoring.update(sleep_endpoints)
-        list(map(scoring.pop, ["date", "wake_bouts", "sleep_bouts", "number_wake_bouts"]))
+    #    scoring.update(sleep_endpoints)
+    #    list(map(scoring.pop, ["date", "wake_bouts", "sleep_bouts", "number_wake_bouts"]))
 
     return scoring
 
 
 def dl_multiclass_specificity(y_true, y_pred, labels, average="weighted"):
-
     if average == "macro":
         raise NotImplementedError("Not implemented yet")
 

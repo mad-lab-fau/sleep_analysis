@@ -30,7 +30,12 @@ dataset, group_labels = load_dataset(dataset_name, small=small)
 pipe = AdaBoostPipeline(modality=modality, classification_type=classification)
 
 # parameter search space for Grid Search
-parameters = ParameterGrid({"learning_rate": [0.1, 1.0, 1.5], "n_estimators": [500],})
+parameters = ParameterGrid(
+    {
+        "learning_rate": [0.1, 1.0, 1.5],
+        "n_estimators": [500],
+    }
+)
 
 hold_out_optimization(
     pipe=pipe,

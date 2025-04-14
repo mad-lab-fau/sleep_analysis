@@ -5,14 +5,12 @@ from sleep_analysis.classification.deep_learning.lstm.data_peparation import Dat
 
 class Dataloader:
     def __init__(self, seq_len, dataset_name="MESA_Sleep", overlap=0.95, classification_type="binary"):
-
         self.seq_len = seq_len
         self.dataset_name = dataset_name
         self.overlap = overlap
         self.classification_type = classification_type
 
     def get_final_tensors(self, modality, train, val, test):
-
         # check if modality is a list of either HRV, ACT, RRV or EDR
         mod_set = {"HRV", "ACT", "RRV", "EDR"}
         if not all({mod}.issubset(mod_set) for mod in modality):

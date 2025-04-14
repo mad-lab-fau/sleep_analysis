@@ -1,6 +1,5 @@
 """Contains classes for EDR algorithms from Neurokit2 https://doi.org/10.3758/s13428-020-01516-y."""
 
-
 import neurokit2 as nk
 import numpy as np
 import pandas as pd

@@ -7,27 +7,31 @@ license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.8.0,<3.10.11"
+python = ">=3.9.0,<3.11"
 nbstripout = "^0.6.1"
-tpcp = "^0.13.0"
-seaborn = "^0.11.1"
+seaborn = "0.13.2"
 fau-colors = "^1.2.0"
-empkins-io = {path = "../empkins-io", develop = true}
 optuna = "^3.0.3"
+empkins-io = {path = "../empkins-io", develop = true}
 xgboost = "^1.6.2"
-numpy = "1.23.5"
-torch = "1.12.1"
-greenlet = "2.0.1"
-mesa_data_importer = {path="../mesa-data-importer", develop = true}
+torch = "^1.12.1"
+poethepoet = "^0.24.2"
+ipykernel = "^6.29.0"
+mne = "1.4.2"
+empkins-micro = {path = "../empkins-micro", extras=["radar"], develop = true}
+mesa-data-importer = {path = "../mesa-data-importer", develop = true}
+black = "^24.8.0"
 hrv-analysis = "^1.0.4"
-biopsykit = "^0.9.0"
-yasa = "^0.6.3"
-shap = "^0.41.0"
-debugpy = "1.6.6"
+optuna-integration = "^4.0.0"
+tpcp = "^2.0.0"
+focal-loss-torch = "^0.1.2"
 
 
 [tool.poetry.dev-dependencies]
-ipympl = "^0.9.2"
+ipympl = "^0.9.4"
+
+
+
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

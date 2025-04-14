@@ -14,10 +14,10 @@ change dataset_name to change between the different datasets - options: MESA_Sle
 # modality MUST be a list from either ACT, HRV, RRV, or EDR
 modality = ["ACT", "HRV", "RRV"]
 # classification type: can be either binary, 3stage, 4stage or 5stage
-classification = "3stage"
+classification = "binary"
 # dataset_name: currently only MESA_Sleep supported
 dataset_name = "MESA_Sleep"
-small = False
+small = True
 
 print("Run with following parameters:")
 print("modality " + " ,".join(modality))

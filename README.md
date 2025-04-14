@@ -5,24 +5,23 @@
 ![GitHub](https://img.shields.io/github/license/mad-lab-fau/sleep_analysis)
 ![GitHub last commit](https://img.shields.io/github/last-commit/mad-lab-fau/sleep_analysis)
 
+This repository contains a framework for the classification of sleep stages using different algorithms and modalities. <br>
 
-Insufficient sleep quality is directly linked to a series of physical and physiological diseases. Therefore, reliable sleep monitoring
-is essential for prevention, diagnosis, and treatment of such.
-The gold standard approach for sleep monitoring and the detection of sleep disorders is **Polysomnography** (PSG), which is typically performed in a sleep laboratory.
-However, **PSG** is expensive, time-consuming, and uncomfortable for the patient. 
-To improve patient experience and prevent diseases at an early stage, **wearable sensors**, such as  **motion sensors**, **ECG** sensors or **respiration belts**, offer a promising alternative.
-This repository presents a benchmark analysis of the performance of machine learning and deep learning algorithms for sleep stage classification using multimodal approaches including **actigraphy**, **heart rate variability**, and **respiratory rate variability**.
-Additionally, this work incorporates respiratory information through features derived via  **ECG-derived respiration** (EDR) and compares their performance against the other approaches.
-<br>
+Version for paper: Incorporating Respiratory Signals for ML-based Multi-Modal Sleep Stage Classification: A Large-Scale Benchmark Study with Actigraphy and HRV (https://doi.org/10.1093/sleep/zsaf091) on Tag: v0.1.0
 
-The evaluation is performed for three different experiments: <br>
+The evaluation can be performed for three different classification schemes: <br>
 - Multistage classification **(Wake / N1 / N2 / N3 / REM)** & **(Wake / NREM / REM)** <br>
 - Binary classification **(Wake / Sleep)**.
 <br>
 
-The evaluation is performed on the [MESA Sleep dataset](https://sleepdata.org/datasets/mesa) [paper1](https://pubmed.ncbi.nlm.nih.gov/29860441/), [paper2](https://pubmed.ncbi.nlm.nih.gov/25409106/), which includes sleep data of more than 1,000 participants.
+## Supported Datasets
+Sleep staging can be performed and evaluated on the following datasets: 
+- [MESA Sleep dataset](https://sleepdata.org/datasets/mesa) [paper1](https://pubmed.ncbi.nlm.nih.gov/29860441/), [paper2](https://pubmed.ncbi.nlm.nih.gov/25409106/), which includes Polysomnography and wrist worn Actigraphy of more than 1,000 participants.
+- EmpkinS D04 dataset [to be published], which includes Polysomnography with concurrent radar recordings.
 
-<img src="media/Dataset_visualization.jpg" alt="drawing" width="700"/>
+## Transfer Learning
+- This repository also includes a transfer learning approach to classify sleep stages on the EmpkinS D04 dataset using the MESA dataset as a source domain. <br>
+
 
 ## ECG derived respiration (EDR)
 This Repository also includes Algorithms for the extraction of EDR signals from ECG signals. <br>
@@ -35,10 +34,28 @@ This Repository also includes Algorithms for the extraction of EDR signals from 
 - Soni Algorithm [paper](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6329220/)
 - Sakar Algorithm [paper](https://digital-library.theiet.org/content/conferences/10.1049/cp.2015.1654)
 
-## Results overview
+## Using the Framework
+To run the algorithms on the datasets, the following steps are required:
+
+1. Install the repository by using poetry (instructions below in the [getting startet](#getting-started) section).
+2. Download the dataset (MESA: from [here](https://sleepdata.org/datasets/mesa)) and place it in a custom folder (e.g. `data/mesa`).
+3. Create a folder for the processed data (e.g. `data/mesa_processed`).
+4. Adjust the dataset paths and the processed path to the dataset in the [study_data.json](study_data.json) file.
+5. Run the [data_handling.py](experiments/data_handling/data_handling.py) script to preprocess the data and extract the features.
+6. Run the [algorithm_scripts](sleep_analysis/classification/algorithm_scripts) to run the algorithms.
+7. The algorithms can be run with different parameters:
+       - Specify the dataset you want to use for sleep staging
+       - Enable / disable Transfer Learning
+       - Select the modalities (actigraphy (ACT), heart rate variability (HRV), respiration rate variability (RRV), ECD-derived respiration rate variability (ED-RRV)).
+       - The algorithms can also be run with custom combinations of modalities (e.g. ACT + HRV, ACT + RRV, ACT + HRV + RRV, ACT + HRV + RRV + ED-RRV, ...).
+7. The jupyter notebooks in the [evaluation](experiments/evaluation) folder can be used to evaluate the results.
+
+
+## Results for training and evaluation of the algorithms on the MESA dataset. <br>
+Paper: Krauss et. al: [Incorporating Respiratory Signals for ML-based Multi-Modal Sleep Stage Classification: A Large-Scale Benchmark Study with Actigraphy and HRV](https://doi.org/10.1093/sleep/zsaf091) <br>
 
 An overview of the full results can be in the following notebook: [results_notebook](experiments/evaluation/algorithm_modality_comparison/full_eval.ipynb). <br>
-The evaluation of the sngle algorithms can be found in the following notebooks: [LSTM](experiments/evaluation/evaluation_per_algorithm/LSTM.ipynb), [TCN](experiments/evaluation/evaluation_per_algorithm/TCN.ipynb), [AdaBoost](experiments/evaluation/evaluation_per_algorithm/AdaBoost.ipynb), [MLP](experiments/evaluation/evaluation_per_algorithm/MLP.ipynb), [SVM](experiments/evaluation/evaluation_per_algorithm/SVM.ipynb), [Random Forest](experiments/evaluation/evaluation_per_algorithm/Random_Forest.ipynb), [XGBoost](experiments/evaluation/evaluation_per_algorithm/XGBoost.ipynb). <br>
+The evaluation of the single algorithms can be found in the following notebooks: [LSTM](experiments/evaluation/evaluation_per_algorithm/LSTM.ipynb), [TCN](experiments/evaluation/evaluation_per_algorithm/TCN.ipynb), [AdaBoost](experiments/evaluation/evaluation_per_algorithm/AdaBoost.ipynb), [MLP](experiments/evaluation/evaluation_per_algorithm/MLP.ipynb), [SVM](experiments/evaluation/evaluation_per_algorithm/SVM.ipynb), [Random Forest](experiments/evaluation/evaluation_per_algorithm/Random_Forest.ipynb), [XGBoost](experiments/evaluation/evaluation_per_algorithm/XGBoost.ipynb). <br>
 ### 5 stage classification (Wake / N1 / N2 / N3 / REM, according to AASM)
 <img src="media/best_performing_5stage.jpg" alt="drawing" width="700"/>
 
@@ -47,21 +64,6 @@ The evaluation of the sngle algorithms can be found in the following notebooks: 
 
 ### Binary classification (Wake / Sleep)
 <img src="media/best_performing_Binary.jpg" alt="drawing" width="700"/>
-
-
-## Using the Framework
-To run the algorithms on the MESA dataset, the following steps are required:
-
-1. Install the repository by using poetry (instructions below in the [getting startet](#getting-started) section).
-2. Download the MESA dataset from [here](https://sleepdata.org/datasets/mesa) and place it in a custom folder (e.g. `data/mesa`).
-3. Create a folder for the processed data (e.g. `data/mesa_processed`).
-4. Adjust the MESA path and the processed path to the dataset in the [study_data.json](study_data.json) file.
-5. Run the [data_handling.py](experiments/data_handling/data_handling.py) script to preprocess the data and extract the features.
-6. Run the [algorithm_scripts](sleep_analysis/classification/algorithm_scripts) to run the algorithms.
-    - The algorithms can be run with different modalities (actigraphy (ACT), heart rate variability (HRV), respiration rate variability (RRV), ECD-derived respiration rate variability (ED-RRV)).
-    - The algorithms can also be run with custom combinations of modalities (e.g. ACT + HRV, ACT + RRV, ACT + HRV + RRV, ACT + HRV + RRV + ED-RRV, ...).
-7. The jupyter notebooks in the [evaluation](experiments/evaluation) folder can be used to evaluate the results.
-
 
 
 ## Project structure
@@ -78,17 +80,42 @@ sleep-analysis
 │       ├── utils  # Helper functions for classification algorithms e.g. scoring
 │   ├── datasets # TPCP Datasets
 │   ├── feature_extraction # Feature extraction algorithms
-│       ├── actigraphy.py # Actigraphy feature extraction algorithms
-│       ├── hrv.py # Heart rate variability feature extraction algorithms
-│       ├── imu.py # IMU feature extraction algorithms
-│       ├── rrv.py # Respiratory rate variability feature extraction algorithms
-│       ├── utils.py # Helper functions for feature extraction algorithms
+|       ├── mesa_dataset # Feature extraction for the MESA dataset
+│          ├── actigraphy.py # Actigraphy feature extraction algorithms
+│          ├── hrv.py # Heart rate variability feature extraction algorithms
+│          ├── imu.py # IMU feature extraction algorithms
+│          ├── rrv.py # Respiratory rate variability feature extraction algorithms
+│          ├── utils.py # Helper functions for feature extraction algorithms
+│       ├── d04_main # Feature extraction for the EmpkinS D04 Radar dataset
+│          ├── combine_clean.py # Combines the cleaned data from the EmpkinS D04 dataset
+│          ├── hrv.py # Heart rate variability feature extraction algorithms
+│          ├── rrv.py # Respiratory rate variability feature extraction algorithms
+│          ├── movement.py # Movement feature extraction algorithms
 │   ├── preprocessing # Preprocessing algorithms
-│       ├── mesa_dataset # Preprocessing the MESA dataset for classifying sleep stages
+│       ├── mesa_dataset # Preprocessing the MESA dataset
+│          ├── edr_extraction
+│              ├── base_extraction.py # Base class for the EDR extraction algorithms
+│              ├── extraction_feature.py # Feature-based EDR-extraction
+│              ├── extraction_filtered.py # Filter-based EDR-extraction
+│              ├── extraction_nk.py # EDR-extraction of neurokit2 packackage
+│          ├── preprocess_mesa.py # Combine preprocessing the MESA dataset in one file
+│          ├── actigraphy.py # Preprocessing the actigraphy data
+│          ├── ecg.py # Preprocessing the ECG data
+│          ├── edr.py # Preprocessing the EDR data
+│          ├── ground_truth.py # Preprocessing the sleep stage labels
+│          ├── respiration.py # Preprocessing the respiration data
+│          ├── utils.py # Helper functions for preprocessing algorithms
+│       ├── d04_main # Preprocessing the EmpkinS D04 dataset
+│          ├── preprocess_d04_movement.py # Subject-based logic to extract the movement datafrom the radar data
+│          ├── movement.py # Preprocessing the movement data
+│          ├── preprocess_d04_heart_sound.py # Subject-based logic to extract the heart sound data from the radar data
+│          ├── heart_sound_radar.py # Preprocessing the heart sound data
+│          ├── preprocess_d04_respiration.py # Subject-based logic to extract the respiration data from the radar data
+│          ├── respiration_radar.py # Preprocessing the respiration data
+│          ├── utils.py # Helper functions for preprocessing algorithms
 │       ├── utils.py # Helper functions for preprocessing algorithms
-|
 ├── experiments  # The main folder for all experiements. Each experiment has its own subfolder
-|   ├── evaluation  # Contains the evaluation of the experiments
+|   ├── evaluation  # Contains the evaluation for the MESA-based sleep stage classification
 |   |   ├── algorithm_modality_comparison  # Contains the evaluation of the algorithm and modality comparison
 |   |   ├── baseline # Contains the computation of the baseline
 |   |   ├── dataset_statistics # Contains the computation of the dataset statistics
@@ -112,7 +139,7 @@ sleep-analysis
 ### Installation
 
 ```
-git clone https://github.com/danielkrauss2/sleep_analysis.git
+git clone https://mad-srv.informatik.uni-erlangen.de/empkins/analysis/D04/sleep-analysis.git
 ```
 
 
@@ -122,9 +149,11 @@ Install Python >=3.8 and [poetry](https://python-poetry.org).
 Then run the commands below to get the latest source and install the dependencies:
 
 ```bash
-git clone https://github.com/mad-lab-fau/sleep_analysis.git
+git clone https://mad-srv.informatik.uni-erlangen.de/empkins/analysis/D04/sleep-analysis.git
+git clone https://github.com/mad-lab-fau/BioPsyKit.git
 git clone https://github.com/mad-lab-fau/mesa-data-importer.git
 git clone https://github.com/empkins/empkins-io.git
+git clone https://github.com/empkins/empkins-micro.git
 ```
 
 Then enter the folder of the sleep-analysis project and run poetry
@@ -224,3 +253,13 @@ poe lint # runs prospector
 
 If you want to check if all code follows the code guidelines, run `poe check`.
 This can be useful in the CI context
+
+
+### Tests
+
+All tests are located in the `tests` folder and can be executed by using `poe test`.
+
+
+### HPC
+Coming soon!
+HPC: export PATH=$PATH:'/home/hpc/iwso/YOUR-HPC-USERNAME/.local/bin'

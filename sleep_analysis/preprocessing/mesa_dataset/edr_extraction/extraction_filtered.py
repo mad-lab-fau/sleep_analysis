@@ -1,4 +1,5 @@
 """Functions and Classes for EDR extraction applying filters on ECG data."""
+
 import neurokit2 as nk
 import numpy as np
 import pandas as pd
@@ -30,7 +31,10 @@ class ExtractionWavelet(BaseExtraction):
         scales = w * sampling_rate / (2 * freqs * np.pi)
 
         coefficients = signal.cwt(
-            data=ecg_signal.to_numpy(copy=True).ravel(), wavelet=signal.morlet2, widths=scales, w=5,
+            data=ecg_signal.to_numpy(copy=True).ravel(),
+            wavelet=signal.morlet2,
+            widths=scales,
+            w=5,
         )
         return coefficients, freqs
 
@@ -45,8 +49,13 @@ class ExtractionLindeberg(BaseExtraction):
     """
 
     def extract(self, ecg_signal: pd.DataFrame, sampling_rate: float):
-
-        edr = nk.signal_filter(ecg_signal.iloc[:, 0], sampling_rate=sampling_rate, lowcut=0.066, highcut=1.0, order=10,)
+        edr = nk.signal_filter(
+            ecg_signal.iloc[:, 0],
+            sampling_rate=sampling_rate,
+            lowcut=0.066,
+            highcut=1.0,
+            order=10,
+        )
         self.respiratory_signal = pd.DataFrame(data=edr, index=ecg_signal.index)
         self.respiratory_signal = self.normalize(self.respiratory_signal)
         return self
@@ -146,7 +155,6 @@ class ExtractionGarde(BaseExtraction):
         return self
 
     def __ccf(self, respiratory_signal: pd.DataFrame, sampling_rate: float) -> pd.DataFrame:
-
         """Centered correntropy function"""
         N = len(respiratory_signal.index)  # faster than taking the whole dataframe
         sigma = self.__calc_sigma(respiratory_signal=respiratory_signal)
@@ -174,7 +182,7 @@ class ExtractionGarde(BaseExtraction):
 
         V = summed_kdes
         # Correntropy mean V_bar
-        V_bar = (1 / (N ** 2)) * np.sum(kdes)
+        V_bar = (1 / (N**2)) * np.sum(kdes)
         # Centered CCF (Substract mean)
         V_c = V - V_bar
         return pd.DataFrame(data=V_c, index=respiratory_signal.index)
@@ -188,7 +196,7 @@ class ExtractionGarde(BaseExtraction):
         return sigma
 
     def __gaussian_kernel(self, distances: np.array, sigma: float):
-        kappa = (1 / (np.sqrt(2 * np.pi) * sigma)) * np.exp((-1) * (distances ** 2) / (2 * (sigma ** 2)))
+        kappa = (1 / (np.sqrt(2 * np.pi) * sigma)) * np.exp((-1) * (distances**2) / (2 * (sigma**2)))
         return kappa
 
 
@@ -203,16 +211,18 @@ class ExtractionResampledAddisonFM(ExtractionWavelet):
     """
 
     def extract(self, ecg_signal: pd.DataFrame, sampling_rate: float):
-
         # Resample ecg respiratory_signal to 25 Hz
         factor = 10
-        ecg_signal = pd.DataFrame(data=scipy.signal.decimate(ecg_signal.iloc[:], factor, axis=0),)
+        ecg_signal = pd.DataFrame(
+            data=scipy.signal.decimate(ecg_signal.iloc[:], factor, axis=0),
+        )
         sampling_rate = sampling_rate / factor
 
         # Get Wavelet Coefficients
-        (coefficients, frequencies,) = ExtractionResampledAddisonFM.get_wavelet_coefficients(
-            ecg_signal=ecg_signal, sampling_rate=sampling_rate
-        )
+        (
+            coefficients,
+            frequencies,
+        ) = ExtractionResampledAddisonFM.get_wavelet_coefficients(ecg_signal=ecg_signal, sampling_rate=sampling_rate)
 
         # filter frequencies between 30 and 220 bpm
         filter_range = (30, 220)

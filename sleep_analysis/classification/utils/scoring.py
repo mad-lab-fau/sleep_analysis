@@ -8,7 +8,7 @@ import sklearn.metrics as sk_metrics
 from biopsykit.sleep.sleep_endpoints import compute_sleep_endpoints
 from biopsykit.sleep.sleep_processing_pipeline.sleep_processing_pipeline import *
 from sklearn.metrics import classification_report, confusion_matrix, matthews_corrcoef
-from tpcp.validate import NoAgg
+from tpcp.validate import no_agg
 
 from sleep_analysis.datasets.mesadataset import MesaDataset
 
@@ -85,7 +85,7 @@ def binary_score(pipeline, datapoint: MesaDataset):
         "kappa": sk_metrics.cohen_kappa_score(ground_truth, pipeline.classification_),
         "specificity": tn / (tn + fp),
         "mcc": matthews_corrcoef(ground_truth, pipeline.classification_),
-        "confusion_matrix": NoAgg(conf_matrix),
+        "confusion_matrix": no_agg(conf_matrix),
     }
 
     bed_interval = compute_bed_interval_from_datapoint(datapoint)
@@ -115,7 +115,7 @@ def binary_score(pipeline, datapoint: MesaDataset):
 
 
 def multiclass_score(pipeline, datapoint: MesaDataset, classification_type: str):
-    """ Scoring function to compute metrics of multiclass classification performance. This performance measures are based on the confusion matrix."""
+    """Scoring function to compute metrics of multiclass classification performance. This performance measures are based on the confusion matrix."""
     ground_truth = datapoint.ground_truth[[classification_type]]
 
     # set labels depending on classification type. This is necessary to compute the confusion matrix.
@@ -140,36 +140,38 @@ def multiclass_score(pipeline, datapoint: MesaDataset, classification_type: str)
         ),
         "recall": sk_metrics.recall_score(ground_truth, pipeline.classification_, zero_division=0, average="weighted"),
         "f1": sk_metrics.f1_score(ground_truth, pipeline.classification_, zero_division=0, average="weighted"),
-        "kappa": sk_metrics.cohen_kappa_score(ground_truth, pipeline.classification_,),
+        "kappa": sk_metrics.cohen_kappa_score(
+            ground_truth,
+            pipeline.classification_,
+        ),
         "specificity": multiclass_specificity(
             ground_truth, pipeline.classification_, labels=labels, average="weighted"
         ),
         "mcc": matthews_corrcoef(ground_truth, pipeline.classification_),
-        "confusion_matrix": NoAgg(conf_matrix),
+        "confusion_matrix": no_agg(conf_matrix),
     }
 
     # Compute sleep metrics
-    bed_interval = compute_bed_interval_from_datapoint(datapoint)
-    pipeline.classification_[pipeline.classification_ != 0] = 1
-    sleep_endpoints = compute_sleep_endpoints(
-        pd.DataFrame(pipeline.classification_, columns=["sleep_wake"]), bed_interval
-    )
+    # bed_interval = compute_bed_interval_from_datapoint(datapoint)
+    # pipeline.classification_[pipeline.classification_ != 0] = 1
+    # sleep_endpoints = compute_sleep_endpoints(
+    #    pd.DataFrame(pipeline.classification_, columns=["sleep_wake"]), bed_interval
+    # )
 
-    if not sleep_endpoints:
-        sleep_endpoints = _empty_sleep_metrics()
+    # if not sleep_endpoints:
+    #    sleep_endpoints = _empty_sleep_metrics()
 
-    scoring.update(sleep_endpoints)
-    list(map(scoring.pop, ["date", "wake_bouts", "sleep_bouts", "number_wake_bouts"]))
+    # scoring.update(sleep_endpoints)
+    # list(map(scoring.pop, ["date", "wake_bouts", "sleep_bouts", "number_wake_bouts"]))
     return scoring
 
 
 def multiclass_specificity(y_true, y_pred, labels, average="weighted"):
-    """ Calculates the specificity for multiclass classification problems"""
+    """Calculates the specificity for multiclass classification problems"""
 
     if average == "macro":
         raise NotImplementedError("Not implemented yet")
     elif average == "weighted":
-
         conf_matrix = confusion_matrix(y_true, y_pred, labels=labels)
         specificity = []
         weights = []

@@ -6,8 +6,14 @@ from tpcp.optimize import Optimize
 
 import sleep_analysis.classification.utils.scoring as sc
 from sleep_analysis.classification.ml_algorithms.ml_pipeline_helper import _get_sleep_stage_labels
-from sleep_analysis.classification.ml_algorithms.xgboost_classifier import XGBOptuna, XGBPipeline
+from sleep_analysis.classification.ml_algorithms.xgboost_classifier import (
+    OptunaSearch,
+    XGBPipeline,
+    get_study_params,
+    create_search_space,
+)
 from sleep_analysis.classification.utils.data_loading import load_dataset
+
 
 """
 change list of modalities to select the data modality to train with - options:  ACT, HRV, RRV, EDR
@@ -15,10 +21,10 @@ change dataset_name to change between the different datasets - options: MESA_Sle
 """
 
 # modality MUST be a list from either ACT, HRV, RRV, or EDR
-modality = ["ACT", "HRV"]
-dataset_name = "MESA_Sleep"
+modality = ["ACT", "HRV", "RRV"]
+dataset_name = "Radar"
 # classification type: can be either binary, 3stage, 4stage or 5stage
-classification = "binary"
+classification = "5stage"
 small = False
 
 print("Run with following parameters:")
@@ -32,12 +38,28 @@ dataset, group_labels = load_dataset(dataset_name, small=small)
 pipe = XGBPipeline(modality=modality, classification_type=classification)
 
 train, test = dataset
-xgb_optuna = XGBOptuna(
-    pipeline=pipe, score_function=sc.score, seed=360, modality=modality, classification_type=classification
-)
-xgb_optuna = xgb_optuna.optimize(train)
 
-optimized_pipeline = xgb_optuna.optimized_pipeline_
+opti = OptunaSearch(
+    pipe,
+    get_study_params,
+    create_search_space=create_search_space,
+    score_function=sc.score,
+    n_trials=200,
+    random_seed=42,
+)
+
+opti = opti.optimize(train)
+print(
+    f"The best performance was achieved with the parameters {opti.best_params_} and an MCC-score of {opti.best_score_}."
+)
+
+
+# xgb_optuna = XGBOptuna(
+#    pipeline=pipe, score_function=sc.score, seed=360, modality=modality, classification_type=classification
+# )
+# xgb_optuna = xgb_optuna.optimize(train)
+
+optimized_pipeline = opti.optimized_pipeline_
 
 optimizable_pipeline = Optimize(optimized_pipeline)
 optimizable_pipeline = optimizable_pipeline.optimize(train)
@@ -58,7 +80,7 @@ print("... done!")
 final_results = {}
 
 for subj in test:
-    final_results[subj.index["mesa_id"][0]] = sc.score(optimizable_pipeline.optimized_pipeline_, subj)
+    final_results[subj.index["subj_id"][0]] = sc.score(optimizable_pipeline.optimized_pipeline_, subj)
 
 sleep_stage_labels, conf_matrix = _get_sleep_stage_labels(classification)
 

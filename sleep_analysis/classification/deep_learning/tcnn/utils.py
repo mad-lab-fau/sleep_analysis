@@ -1,5 +1,4 @@
 def get_num_input(modality, dataset_name):
-
     if dataset_name == "MESA_Sleep":
         if modality == "ACT":
             num_inputs = 1

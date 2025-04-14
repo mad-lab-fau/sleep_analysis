@@ -1,6 +1,18 @@
 {
-  "processed_mesa_path": "/Users/danielkrauss/code/MA_Daniel_Krauss/data/sleep-wake-benchmarking-mesa-dataset",
-  "mesa_path": "/Users/danielkrauss/code/MA_Daniel_Krauss/data/mesa",
-  "mesa_path_edf": "/Users/danielkrauss/code/MA_Daniel_Krauss/data/mesa/polysomnography/edfs",
-  "database_storage": "home/woody/iwso/iwso040h/sleep-analysis/exports/database/"
+  "empkins_prestudy": "/Users/danielkrauss/code/Empkins/Data/empkins_bed_pre_study_dataset",
+  "processed_mesa_path_local": "/Volumes/INTENSO/datasets/mesa_processed/sleep-wake-benchmarking-mesa-dataset",
+  "processed_mesa_path_testing": "/Users/danielkrauss/code/Empkins/Data/sleep-wake-benchmarking-mesa-dataset",
+  "processed_mesa_path_hpc": "/home/woody/iwso/iwso040h/Data/sleep-wake-benchmarking-mesa-dataset",
+  "mesa_path": "/Volumes/INTENSO/datasets/mesa",
+  "mesa_path_edf": "/Volumes/INTENSO/datasets/mesa/polysomnography/edfs",
+  "nest_hub_pre_study": "/Users/danielkrauss/code/Empkins/Data/Nest_Hub",
+  "database_storage": "/home/woody/iwso/iwso040h/sleep-analysis/exports/database/",
+  "results_per_subj": "/Users/danielkrauss/code/Empkins/sleep-analysis/exports/results_per_subject/lstm/Radar",
+  "processed_D04_hpc_control" : "/home/woody/iwso/iwso040h/Data/d04_processed",
+  "processed_D04_hpc_pd" : "/home/woody/iwso/iwso040h/Data/d04_processed_pd",
+  "empkins_mainstudy_control_hpc": "/home/woody/iwso/iwso040h/Data/empkins_contactless_sleep_lab",
+  "empkins_mainstudy_control": "/Users/danielkrauss/code/Empkins/Data/empkins_contactless_sleep_lab",
+  "empkins_mainstudy_pd_local": "/Users/danielkrauss/code/Empkins/Data/empkins_contactless_sleep_pd",
+  "empkins_mainstudy_pd_hpc": "/home/woody/iwso/iwso040h/Data/empkins_contactless_sleep_pd",
+  "processed_D04_local": "/Users/danielkrauss/code/Empkins/Data/d04_processed"
 }

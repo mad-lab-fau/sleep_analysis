@@ -28,7 +28,6 @@ class BaseExtraction(Algorithm):
         pass
 
     def normalize(self, respiration_signal: pd.DataFrame):
-
         normalized_respiration_signal = (respiration_signal - respiration_signal.mean()) / respiration_signal.std()
 
         scaled_respiration_signal = (normalized_respiration_signal - normalized_respiration_signal.min()) / (

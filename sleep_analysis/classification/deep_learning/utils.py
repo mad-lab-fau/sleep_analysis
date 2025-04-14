@@ -1,4 +1,5 @@
 from sleep_analysis.datasets.mesadataset import MesaDataset
+from sleep_analysis.datasets.d04_main_dataset_control import D04MainStudy
 
 
 def get_num_classes(classification_type):
@@ -50,7 +51,12 @@ def load_dataset(dataset_name, small):
             dataset = MesaDataset()[0:20]
         else:
             dataset = MesaDataset()
-
+        return dataset
+    elif dataset_name == "Radar":
+        if small is True:
+            dataset = D04MainStudy(exclusion_criteria=["EEG"])[0:10]
+        else:
+            dataset = D04MainStudy(exclusion_criteria=["EEG"])
         return dataset
     else:
         raise ValueError("dataset_name not known")

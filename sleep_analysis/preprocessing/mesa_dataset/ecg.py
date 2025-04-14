@@ -10,6 +10,7 @@ def process_rpoint(ecg_df):
     rr_intervals = pd.DataFrame(ecg_df["seconds"].diff() * 1000)
     rr_intervals = rr_intervals.rename(columns={"seconds": "RR Intervals"})
 
+    # hr_df["RR Intervals"] = hr_df["seconds"].diff() * 1000
     rr_intervals["RR Intervals"].fillna(rr_intervals["RR Intervals"].mean(), inplace=True)  # fill mean for first sample
 
     # apply HRV-Analysis package

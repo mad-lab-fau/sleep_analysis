@@ -6,6 +6,8 @@ from sklearn.preprocessing import StandardScaler
 from torch.autograd import Variable
 from tpcp import Dataset
 
+from sleep_analysis.feature_extraction.d04_main.combine_clean import _map_sleep_phases_to_num
+
 
 def create_tensor(x_normalized, y_mat):
     # convert into tensor
@@ -22,9 +24,12 @@ def test_to_list(subj, x_list, y_list, x_test_subj, y_test_subj):
     if subj.__class__.__name__ == "RealWorldIMUSet" or subj.__class__.__name__ == "RealWorldData":  # Deprecated
         x_list.append([x_test_subj, subj.index["subj_id"][0] + "_" + subj.index["night"][0]])
         y_list.append([y_test_subj, subj.index["subj_id"][0] + "_" + subj.index["night"][0]])
+    elif subj.__class__.__name__ == "D04MainStudy":
+        x_list.append([x_test_subj, subj.index["subj_id"][0]])
+        y_list.append([y_test_subj, subj.index["subj_id"][0]])
     else:
-        x_list.append([x_test_subj, subj.index["mesa_id"][0]])
-        y_list.append([y_test_subj, subj.index["mesa_id"][0]])
+        x_list.append([x_test_subj, subj.index["subj_id"][0]])
+        y_list.append([y_test_subj, subj.index["subj_id"][0]])
     return x_list, y_list
 
 
@@ -117,16 +122,35 @@ class DataPreparation:
 
         for subj in dataset:
             features = pd.DataFrame()
+            all_features = subj.feature_table
 
             if "ACT" in modality:
-                actigraph_data = subj.actigraph_data
-                features = pd.concat([features, actigraph_data], axis=1)
-            if "HRV" in modality:
-                hrv_features = subj.features.filter(regex="_hrv")[
+                movement_features = all_features.filter(regex="_acc")[
                     [
-                        "_hrv_mean_nni",
-                        "_hrv_sdnn",
-                        "_hrv_sdsd",
+                        "_acc_mean_1",
+                    ]
+                ]
+                features = pd.concat([features, movement_features], axis=1)
+            if "HRV" in modality:
+                if dataset.__class__.__name__ == "D04MainStudy":
+                    hrv_features = all_features.filter(regex="_hrv")[
+                     [
+                        "30_hrv_median_nni",
+                        "30_hrv_ratio_sd2_sd1",
+                        "150_hrv_median_nni",
+                        "150_hrv_vlf",
+                        "150_hrv_lf",
+                        "150_hrv_hf",
+                        "150_hrv_lf_hf_ratio",
+                        "150_hrv_total_power",
+                    ]
+                ]
+                elif dataset.__class__.__name__ == "MesaDataset":
+                    hrv_features = all_features.filter(regex="_hrv")[
+                        [
+                        "_hrv_median_nni",
+                        "_hrv_ratio_sd2_sd1",
+                        "_hrv_median_nni",
                         "_hrv_vlf",
                         "_hrv_lf",
                         "_hrv_hf",
@@ -134,28 +158,47 @@ class DataPreparation:
                         "_hrv_total_power",
                     ]
                 ]
+                else:
+                    raise AttributeError("Dataset not known")
+
                 features = pd.concat([features, hrv_features], axis=1)
             if "RRV" in modality:
-                rrv_features = subj.features.filter(regex="RRV")[
-                    ["150_RRV_MeanBB", "150_RRV_LF", "150_RRV_HF", "150_RRV_LFHF",]
+                rrv_features = all_features.filter(regex="RRV")[
+                    [
+                        "150_RRV_MedianBB",
+                        "150_RRV_LF",
+                        "270_RRV_MCVBB",
+                        "150_RRV_CVBB",
+                    ]
                 ]
+                # "150_RRV_MedianBB",
+                # "150_RRV_RMSSD",
+                # "150_RRV_SampEn",
+                # "150_RRV_LFHF",
+
                 features = pd.concat([features, rrv_features], axis=1)
 
             if "EDR" in modality:
                 edr_features = subj.features.filter(regex="EDR")[
-                    ["150_EDR_MeanBB", "150_EDR_LF", "150_EDR_HF", "150_EDR_LFHF",]
+                    [
+                        "150_EDR_MeanBB",
+                        "150_EDR_LF",
+                        "150_EDR_HF",
+                        "150_EDR_LFHF",
+                    ]
                 ]
                 features = pd.concat([features, edr_features], axis=1)
 
             if classification_type == "binary":
                 ground_truth = subj.ground_truth["sleep"]
             else:
-                ground_truth = subj.ground_truth[classification_type]
+                ground_truth = subj.ground_truth
+                ground_truth = ground_truth[classification_type]
 
             x_mat, y_mat = self.get_sequence_data(features, ground_truth, overlap=overlap, padding=padding)
 
-            x_dict[subj] = x_mat
-            y_dict[subj] = y_mat
+            x_dict[subj.index["subj_id"][0]] = x_mat
+            y_dict[subj.index["subj_id"][0]] = y_mat
 
         x_mat = np.concatenate([x_dict[x] for x in x_dict])
         y_mat = np.concatenate([y_dict[y] for y in y_dict])
@@ -181,10 +224,20 @@ class DataPreparation:
             raise AttributeError("modality MUST be list of either HRV, ACT, RRV, EDR")
 
         x_train, y_train, scaler = self.get_data(
-            train, scaler=None, overlap=None, modality=modality, classification_type=classification_type, padding=True
+            train,
+            scaler=None,
+            overlap=self.overlap,
+            modality=modality,
+            classification_type=classification_type,
+            padding=True,
         )
         x_val, y_val, scaler = self.get_data(
-            val, scaler=scaler, overlap=None, modality=modality, classification_type=classification_type, padding=True
+            val,
+            scaler=scaler,
+            overlap=self.overlap,
+            modality=modality,
+            classification_type=classification_type,
+            padding=True,
         )
         x_test = []
         y_test = []

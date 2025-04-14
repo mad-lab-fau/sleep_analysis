@@ -57,7 +57,6 @@ class TcnMain:
             self.device = "cpu"
 
     def train(self, x_train, y_train, x_val, y_val, num_epochs):
-
         # get batches from train data
         x_batch_train_list, y_batch_train_list = self.batch_loader(x_train, y_train)
 
@@ -67,14 +66,12 @@ class TcnMain:
 
         # start training
         for epoch in range(num_epochs):
-
             train_losses = []
             # set model to training mode
             self.model.train()
 
             # iterate over the batches
             for x_batch_train, y_batch_train in zip(x_batch_train_list, y_batch_train_list):
-
                 if torch.cuda.is_available():
                     x_batch_train = x_batch_train.cuda()
                     y_batch_train = y_batch_train.cuda()
@@ -107,7 +104,6 @@ class TcnMain:
 
                 # iterate over the batches
                 for x_batch_val, y_batch_val in zip(x_batch_val_list, y_batch_val_list):
-
                     if torch.cuda.is_available():
                         x_batch_val = x_batch_val.to(device=self.device)
                         y_batch_val = y_batch_val.to(device=self.device)
@@ -180,7 +176,6 @@ class TcnMain:
 
         # if cuda is available, use it! and set model to evaluation mode
         if self.cuda:
-
             # load best model from training
             self.model.load_state_dict(
                 torch.load(
@@ -202,7 +197,6 @@ class TcnMain:
 
             # iterate over test batches
             for i, (x_batch_test, y_true) in enumerate(zip(x_test, y_test)):
-
                 # subj_id is stored in list element 1
                 subj_idx = x_batch_test[1]
                 # batch data is stored in list element 0
@@ -227,7 +221,6 @@ class TcnMain:
 
         # if cuda is not available, use cpu
         else:
-
             # load best model from training and set model to evaluation mode
             self.model.load_state_dict(
                 torch.load(
@@ -247,7 +240,6 @@ class TcnMain:
 
             # iterate over test batches
             for i, (x_batch_test, y_true) in enumerate(zip(x_test, y_test)):
-
                 # subj_id is stored in list element 1
                 subj_idx = x_batch_test[1]
                 # batch data is stored in list element 0

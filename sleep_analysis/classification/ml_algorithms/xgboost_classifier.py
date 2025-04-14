@@ -9,7 +9,20 @@ from tpcp.validate import cross_validate
 from xgboost import XGBClassifier
 
 from sleep_analysis.classification.utils.utils import get_db_path
+from sleep_analysis.datasets.helper import get_features, get_concat_dataset
 from sleep_analysis.datasets.mesadataset import MesaDataset
+
+from collections.abc import Sequence
+
+from dataclasses import dataclass
+from typing import Generic
+
+from optuna import Trial
+from tpcp.optimize.optuna import CustomOptunaOptimize
+from tpcp.types import DatasetT, PipelineT
+from tpcp.validate import Scorer
+from optuna import samplers
+from typing import Any, Callable, Optional, Union
 
 
 class XGBPipeline(OptimizablePipeline):
@@ -50,7 +63,7 @@ class XGBPipeline(OptimizablePipeline):
         :param dataset: Dataset instance representing the whole train set with its sleep data
         """
         # Concat whole dataset to one DataFrame
-        features, ground_truth = dataset.get_concat_dataset(dataset, modality=self.modality)
+        features, ground_truth = get_concat_dataset(dataset, modality=self.modality)
 
         # Set classifier parameters from Optuna Optimization
         c = self._set_classifier_params(clone(self.classifier))
@@ -82,7 +95,7 @@ class XGBPipeline(OptimizablePipeline):
         Subject-wise classification based on trained model
         :param datapoint: Dataset instance representing the sleep data of one participant
         """
-        features = datapoint.get_features(datapoint, modality=self.modality)
+        features = get_features(datapoint, modality=self.modality)
 
         self.classification_ = self.classifier.predict(np.ascontiguousarray(features))
 
@@ -91,80 +104,131 @@ class XGBPipeline(OptimizablePipeline):
 
 from tpcp.optimize.optuna import CustomOptunaOptimize
 
+### Deprecated XGBOptuna class
+# class XGBOptuna(CustomOptunaOptimize):
+#     def __init__(self, pipeline, score_function, modality, classification_type="binary", seed=1):
+#         self.pipeline = pipeline
+#         self.score_function = score_function
+#         self.res = {}
+#         self.seed = seed
+#         self.modality = modality
+#         self.classification_type = classification_type
+#
+#     def optimize(self, dataset, **optimize_params):
+#         """Apply optuna optimization on the input parameters of the pipeline."""
+#
+#         def objective(trial):
+#             paras_to_be_searched = {
+#                 "n_estimators": trial.suggest_int("n_estimators", 400, 800),
+#                 "max_depth": trial.suggest_int("max_depth", 5, 25),
+#                 "reg_alpha": trial.suggest_int("reg_alpha", 0, 30),
+#                 "reg_lambda": trial.suggest_int("reg_lambda", 0, 25),
+#                 "min_child_weight": trial.suggest_int("min_child_weight", 0, 25),
+#                 "gamma": trial.suggest_int("gamma", 5, 25),
+#                 "learning_rate": trial.suggest_float("learning_rate", 0.01, 0.1),
+#                 "colsample_bytree": trial.suggest_float("colsample_bytree", 0.1, 1),
+#             }
+#
+#             # Clone the pipeline, so it will not change the original pipeline
+#             # Set the parameters that need to be searched in this cloned pipeline
+#             temp_pipeline = self.pipeline.clone().set_params(**paras_to_be_searched)
+#
+#
+#             # Run cross validation
+#             results = cross_validate(
+#                 optimizable=Optimize(temp_pipeline),
+#                 dataset=dataset,
+#                 cv=5,
+#                 scoring=self.score_function,
+#                 return_optimizer=True,
+#                 n_jobs=-1,
+#             )
+#
+#             return np.mean(results["test_mcc"])
+#
+#         # Create and run an optuna study + save trial information
+#         db_path = get_db_path()
+#         study = optuna.create_study(
+#             direction="maximize",
+#             study_name="XGBoostOptuna" + "|".join(self.modality),
+#             sampler=TPESampler(seed=self.seed),
+#             #storage="sqlite:////"
+#             #+ db_path
+#             #+ "/xgb_"
+#             #+ "_".join(self.modality)
+#             #+ "_"
+#             #+ self.classification_type
+#             #+ ".db",
+#             load_if_exists=True,
+#             pruner=optuna.pruners.MedianPruner,
+#         )
+#
+#         study.optimize(objective, n_trials=1, show_progress_bar=True)
+#
+#         best_parameters = study.best_params
+#         if self.classification_type == "binary":
+#             best_parameters["classifier"] = XGBClassifier(objective="binary:logistic", **study.best_params)
+#         else:
+#             best_parameters["classifier"] = XGBClassifier(**study.best_params)
+#
+#         # Set the best params in a new cloned pipeline, refit it and save it
+#         self.optimized_pipeline_ = (
+#             Optimize(self.pipeline.clone().set_params(**best_parameters))
+#             .optimize(dataset, **(optimize_params or {}))
+#             .optimized_pipeline_
+#         )
+#
+#         return self
 
-class XGBOptuna(CustomOptunaOptimize):
-    def __init__(self, pipeline, score_function, modality, classification_type="binary", seed=1):
-        self.pipeline = pipeline
-        self.score_function = score_function
-        self.res = {}
-        self.seed = seed
-        self.modality = modality
-        self.classification_type = classification_type
 
-    def optimize(self, dataset: MesaDataset, **optimize_params):
-        """Apply optuna optimization on the input parameters of the pipeline."""
+@dataclass(repr=False)
+class OptunaSearch(
+    CustomOptunaOptimize.as_dataclass()[PipelineT, DatasetT],
+    Generic[PipelineT, DatasetT],
+):
+    # We need to provide default values in Python <3.10, as we can not use the keyword-only syntax for dataclasses.
+    create_search_space: Optional[Callable[[Trial], None]] = None
+    score_function: Optional[Callable[[PipelineT, DatasetT], float]] = None
 
-        def objective(trial):
-            paras_to_be_searched = {
-                "n_estimators": trial.suggest_int("n_estimators", 200, 400),
-                "max_depth": trial.suggest_int("max_depth", 5, 25),
-                "reg_alpha": trial.suggest_int("reg_alpha", 0, 25),
-                "reg_lambda": trial.suggest_int("reg_lambda", 0, 25),
-                "min_child_weight": trial.suggest_int("min_child_weight", 0, 25),
-                "gamma": trial.suggest_int("gamma", 5, 25),
-                "learning_rate": trial.suggest_float("learning_rate", 0.01, 0.1),
-                "colsample_bytree": trial.suggest_float("colsample_bytree", 0.1, 1),
-            }
+    def create_objective(
+        self,
+    ) -> Callable[[Trial, PipelineT, DatasetT], Union[float, Sequence[float]]]:
+        # Here we define our objective function
 
-            # Clone the pipeline, so it will not change the original pipeline
-            # Set the parameters that need to be searched in this cloned pipeline
-            temp_pipeline = self.pipeline.clone().set_params(**paras_to_be_searched)
+        def objective(trial: Trial, pipeline: PipelineT, dataset: DatasetT) -> float:
+            # First we need to select parameters for the current trial
+            if self.create_search_space is None:
+                raise ValueError("No valid search space parameter.")
+            self.create_search_space(trial)
+            # Then we apply these parameters to the pipeline
+            pipeline = pipeline.set_params(**self.sanitize_params(trial.params))
 
-            pruning_callback = XGBoostPruningCallback(trial, "test_mcc")
-
-            # Run cross validation
             results = cross_validate(
-                optimizable=Optimize(temp_pipeline),
+                optimizable=Optimize(pipeline),
                 dataset=dataset,
                 cv=5,
-                optimize_params={"early_stopping_rounds": 10, "pruning_callback": pruning_callback},
                 scoring=self.score_function,
                 return_optimizer=True,
                 n_jobs=-1,
             )
 
-            return np.mean(results["test_mcc"])
+            return np.mean(results["test__agg__mcc"])
 
-        # Create and run an optuna study + save trial information
-        db_path = get_db_path()
-        study = optuna.create_study(
-            direction="maximize",
-            study_name="XGBoostOptuna" + "|".join(self.modality),
-            sampler=TPESampler(seed=self.seed),
-            storage="sqlite:////"
-            + db_path
-            + "/xgb_"
-            + "_".join(self.modality)
-            + "_"
-            + self.classification_type
-            + ".db",
-            load_if_exists=True,
-            pruner=optuna.pruners.MedianPruner,
-        )
+        return objective
 
-        study.optimize(objective, n_trials=1, show_progress_bar=True)
 
-        best_parameters = study.best_params
-        if self.classification_type == "binary":
-            best_parameters["classifier"] = XGBClassifier(objective="binary:logistic", **study.best_params)
-        else:
-            best_parameters["classifier"] = XGBClassifier(**study.best_params)
+def get_study_params(seed):
+    # We use a simple RandomSampler, but every optuna sampler will work
+    sampler = samplers.TPESampler(seed=seed)
+    return {"sampler": sampler, "direction": "maximize"}
 
-        # Set the best params in a new cloned pipeline, refit it and save it
-        self.optimized_pipeline_ = (
-            Optimize(self.pipeline.clone().set_params(**best_parameters))
-            .optimize(dataset, **(optimize_params or {}))
-            .optimized_pipeline_
-        )
 
-        return self
+def create_search_space(trial: Trial):
+    trial.suggest_int("n_estimators", 400, 800)
+    trial.suggest_int("max_depth", 5, 25)
+    trial.suggest_int("reg_alpha", 0, 30)
+    trial.suggest_int("reg_lambda", 0, 25)
+    trial.suggest_int("min_child_weight", 0, 25)
+    trial.suggest_int("gamma", 5, 25)
+    trial.suggest_float("learning_rate", 0.01, 0.1)
+    trial.suggest_float("colsample_bytree", 0.1, 1)

@@ -1,4 +1,3 @@
-"""Main file for preprocessing the MESA sleep dataset."""
 import json
 from pathlib import Path
 
@@ -25,19 +24,18 @@ with open(Path(__file__).parents[3].joinpath("study_data.json")) as f:
 
 
 def preprocess_mesa():
-    """Clean and preprocess data of MESA Sleep dataset.
-
-    Iterate through all mesa_id with full data availability and call clean_data_helper
     """
+    Clean and preprocess data of MESA Sleep dataset - Iterate through all mesa_id with full data availability and call clean_data_helper
+    """
+
     overlap = pd.read_csv(mesa_path.joinpath("overlap/mesa-actigraphy-psg-overlap.csv"))
 
-    dataset_info = pd.read_csv(mesa_path.joinpath("datasets/mesa-sleep-dataset-0.6.0.csv")).set_index("mesaid")
+    dataset_info = pd.read_csv(mesa_path.joinpath("datasets/mesa-sleep-dataset-0.5.0.csv")).set_index("mesaid")
 
     mesa_id_set = check_mesa_data_availability(mesa_path, processed_mesa_path)
 
     with tqdm.tqdm(total=len(mesa_id_set)) as progress_bar:
         for subj in mesa_id_set:
-
             if match_exclusion_criteria(dataset_info, subj):
                 progress_bar.update(1)
                 continue
@@ -53,7 +51,9 @@ def preprocess_mesa():
 
 
 def _clean_data_helper(df_actigraph, df_r_point, df_sleep_xml, df_resp_features, df_edr_features, overlap, mesa_id):
-    """Clean data of MESA Sleep dataset - Preprocess and align datastreams."""
+    """
+    Clean data of MESA Sleep dataset - Preprocess and align datastreams
+    """
     # process resp_features and edr_features
     df_resp_features = check_resp_features(df_resp_features)
     df_edr_features = check_resp_features(df_edr_features)
@@ -86,7 +86,7 @@ def _clean_data_helper(df_actigraph, df_r_point, df_sleep_xml, df_resp_features,
 
     # ensure that no value of sleep stage df is nan
     try:
-        assert sleep_stages.isnull().values.any() is False
+        assert sleep_stages.isnull().values.any() == False
     except AssertionError:
         print("Nan value in sleep stage df of subject {}".format(mesa_id))
 
@@ -99,7 +99,7 @@ def _clean_data_helper(df_actigraph, df_r_point, df_sleep_xml, df_resp_features,
     )
 
     # Remove remaining NaN values
-    # save the epochs from NaN values from the activity + resp data stream to delete them afterward also in the ECG data
+    # save the epochs from NaN values from the activity + resp data stream to delete them afterwards also in the ECG data
     nan_epochs = list(datastreams_combined.loc[pd.isna(datastreams_combined["activity"]), :]["line"])
     nan_epochs += list(datastreams_combined.loc[pd.isna(datastreams_combined["5stage"]), :]["line"])
     datastreams_combined = datastreams_combined.dropna()
@@ -125,7 +125,6 @@ def _clean_data_helper(df_actigraph, df_r_point, df_sleep_xml, df_resp_features,
         and datastreams_combined["sleep"][datastreams_combined["sleep"] == 1].shape[0]
         > 120  # only save if sleeptime is >2h
     ):
-
         clean_data_to_csv(datastreams_combined, df_hr, df_resp_features, df_edr_features, mesa_id)
 
         # print(str(mesa_id) + " cleaning successful")

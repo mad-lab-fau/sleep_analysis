@@ -10,11 +10,12 @@ change dataset_name to change between the different dataset_names - options: MES
 modality = ["ACT", "HRV", "RRV"]
 
 # classification type: can be either binary, 3stage, 4stage or 5stage
-classification = "binary"
+classification = "3stage"
 
-# dataset_name: currently only MESA_Sleep supported
-dataset_name = "MESA_Sleep"
+# dataset_name: currently only MESA_Sleep and Radar supported
+dataset_name = "Radar"
 small = False
+retrain = True
 
 
 print("Run with following parameters:")
@@ -25,5 +26,5 @@ print("dataset_name: " + dataset_name)
 
 dataset = load_dataset(dataset_name, small=small)
 
-lstm_optuna = LSTM_Optuna(modality=modality, dataset_name=dataset_name, seed=20, classification_type=classification)
+lstm_optuna = LSTM_Optuna(modality=modality, dataset_name=dataset_name, seed=20, classification_type=classification, retrain = retrain)
 lstm_optuna.optimize(dataset=dataset)

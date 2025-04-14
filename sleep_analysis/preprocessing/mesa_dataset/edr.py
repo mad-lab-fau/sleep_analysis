@@ -1,22 +1,23 @@
 import json
+import random
 import re
 from pathlib import Path
 
+import mesa_data_importer as mesa
 import numpy as np
 import pandas as pd
 import tqdm
 from biopsykit.signals.ecg import EcgProcessor
-import warnings
 
-from sleep_analysis.feature_extraction.rrv import extract_rrv_features_helper, process_resp
-from sleep_analysis.feature_extraction.utils import check_processed
+from sleep_analysis.feature_extraction.mesa_datasst.rrv import extract_rrv_features_helper, process_resp
+from sleep_analysis.feature_extraction.mesa_datasst.utils import check_processed
 from sleep_analysis.preprocessing.mesa_dataset.edr_extraction.extraction_feature import ExtractionCharlton
 from sleep_analysis.preprocessing.utils import extract_edf_channel
 
 with open(Path(__file__).parents[3].joinpath("study_data.json")) as f:
     path_dict = json.load(f)
     edf_path = Path(path_dict["mesa_path"]).joinpath("polysomnography/edfs")
-    processed_mesa_path = Path(path_dict["processed_mesa_path"])
+    processed_mesa_path = Path(path_dict["processed_mesa_path_local"])
 
 
 def extract_edr_features(overwrite=False):
@@ -25,14 +26,11 @@ def extract_edr_features(overwrite=False):
     overwrite: if True, overwrite existing files
 
     """
-    warnings.filterwarnings("ignore", category=RuntimeWarning)
-
     path_list = list(Path(edf_path).glob("*.edf"))
     mesa_id = re.findall("(\d{4})", str(path_list))
 
     with tqdm.tqdm(total=len(mesa_id)) as progress_bar:
         for subj in mesa_id:
-
             if not overwrite:  # check if file already exists
                 if check_processed(
                     Path(path_dict["processed_mesa_path"]).joinpath("edr_respiration_features_raw"), subj
