@@ -7,23 +7,26 @@
 
 This repository contains a framework for the classification of sleep stages using different algorithms and modalities. <br>
 
+---
+### Previous versions
 Version for paper: Incorporating Respiratory Signals for ML-based Multi-Modal Sleep Stage Classification: A Large-Scale Benchmark Study with Actigraphy and HRV (https://doi.org/10.1093/sleep/zsaf091) on Tag: v0.1.0 (https://github.com/mad-lab-fau/sleep_analysis/releases/tag/v0.1.0)
+
+
+### Classification schmemes
 
 The evaluation can be performed for three different classification schemes: <br>
 - Multistage classification **(Wake / N1 / N2 / N3 / REM)** & **(Wake / NREM / REM)** <br>
 - Binary classification **(Wake / Sleep)**.
-<br>
 
-## Supported Datasets
+### Supported Datasets
 Sleep staging can be performed and evaluated on the following datasets: 
 - [MESA Sleep dataset](https://sleepdata.org/datasets/mesa) [paper1](https://pubmed.ncbi.nlm.nih.gov/29860441/), [paper2](https://pubmed.ncbi.nlm.nih.gov/25409106/), which includes Polysomnography and wrist worn Actigraphy of more than 1,000 participants.
 - EmpkinS D04 dataset [to be published], which includes Polysomnography with concurrent radar recordings.
 
-## Transfer Learning
+### Transfer Learning
 - This repository also includes a transfer learning approach to classify sleep stages on the EmpkinS D04 dataset using the MESA dataset as a source domain. <br>
 
-
-## ECG derived respiration (EDR)
+### ECG derived respiration (EDR)
 This Repository also includes Algorithms for the extraction of EDR signals from ECG signals. <br>
 - Lindberg Algorithm [paper](https://link.springer.com/article/10.1007/BF02457833)
 - Karlen Algorithm [paper](https://ieeexplore.ieee.org/document/6458992)
@@ -34,7 +37,8 @@ This Repository also includes Algorithms for the extraction of EDR signals from 
 - Soni Algorithm [paper](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6329220/)
 - Sakar Algorithm [paper](https://digital-library.theiet.org/content/conferences/10.1049/cp.2015.1654)
 
-## Using the Framework
+---
+## How to use the Framework
 To run the algorithms on the datasets, the following steps are required:
 
 1. Install the repository by using poetry (instructions below in the [getting startet](#getting-started) section).
@@ -50,6 +54,7 @@ To run the algorithms on the datasets, the following steps are required:
        - The algorithms can also be run with custom combinations of modalities (e.g. ACT + HRV, ACT + RRV, ACT + HRV + RRV, ACT + HRV + RRV + ED-RRV, ...).
 7. The jupyter notebooks in the [evaluation](experiments/evaluation) folder can be used to evaluate the results.
 
+---
 
 ## Results for training and evaluation of the algorithms on the MESA dataset. <br>
 Paper: Krauss et. al: [Incorporating Respiratory Signals for ML-based Multi-Modal Sleep Stage Classification: A Large-Scale Benchmark Study with Actigraphy and HRV](https://doi.org/10.1093/sleep/zsaf091) <br>
@@ -139,7 +144,7 @@ sleep-analysis
 ### Installation
 
 ```
-git clone https://mad-srv.informatik.uni-erlangen.de/empkins/analysis/D04/sleep-analysis.git
+git clone https://github.com/mad-lab-fau/sleep_analysis.git
 ```
 
 
@@ -149,7 +154,7 @@ Install Python >=3.8 and [poetry](https://python-poetry.org).
 Then run the commands below to get the latest source and install the dependencies:
 
 ```bash
-git clone https://mad-srv.informatik.uni-erlangen.de/empkins/analysis/D04/sleep-analysis.git
+git clone https://github.com/mad-lab-fau/sleep_analysis.git
 git clone https://github.com/mad-lab-fau/BioPsyKit.git
 git clone https://github.com/mad-lab-fau/mesa-data-importer.git
 git clone https://github.com/empkins/empkins-io.git
